@@ -5,35 +5,31 @@ int learquivo(char *nome,usuario *raiz_u, usuario *ini_u, usuario *fim_u, hashta
   if(arq==null)
     return -1;
   else{
-      
-    usuario *user;
-    raiz_u = user;
-    ini_u = user;
-    fim_u = user;
-
-    hashtag *hash;
-    raiz_h = hash;
-    ini_h = hash;
-    fim_h = hash;
+	usuario *user;
+	hashtag *hash;
+	tweet *t_lido;
+	  
+	char nick[16];
+    	char texto_tweet[141];
     
-    char nick[16];
-    char texto_tweet[141];
-    
-    while(!feof(arq)){
-      atual=malloc(sizeof(tweet));
-      scanf("%[^;]s",nick);
-      user = verifica_exist(nick);
-      if(user == NULL){
-        user=malloc(sizeof(user));
-        user->nickname = nick;
-      }
-      
+    	while(!feof(arq)){
+    		fscanf("%*c%[^;]s",nick);
+    		user = verifica_usuario(nick);
+    		if(user == NULL){
+        		user=malloc(sizeof(user));
+        		user->nickname = nick;
+      		}
+		t_lido=malloc(sizeof(tweet));
+		fscanf("%[^#][^@][^;]s",t_lido->texto);		
+		
+		
+		
+		user=insere_tweet(tweet)
       
           
-    }
+    	}
  
     
-    else
   }
 
 }
@@ -41,7 +37,7 @@ int learquivo(char *nome,usuario *raiz_u, usuario *ini_u, usuario *fim_u, hashta
 
 
 
-usuario verifica_exist(char *nick, usuario *raiz){
+usuario verifica_usuario(char *nick, usuario *raiz){
 if(raiz!=NULL){
 	
 	
@@ -50,12 +46,12 @@ if(raiz!=NULL){
 	}
 	
 	else if(strcmp(nick,raiz.nickname)<0){
-		return verifica_exist(char *nick, raiz->esq){
+		return verifica_usuario(char *nick, raiz->esq){
 	}
 		
 	else
 	{
-		return verifica_exist(char *nick, raiz->dir){
+		return verifica_usuario(char *nick, raiz->dir){
 	}
 }
 else
