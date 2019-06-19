@@ -1,70 +1,25 @@
+#DEFINE POST 0
+#DEFINE MENC 1
+#DEFINE RTS 2
+#DEFINE INFLU 3
+
+#DEFINE PROX 0
+#DEFINE DIR 1
+#DEFINE ESQ 2
+
 
 typedef struct{
-	char nickname[15];
+	char nickname[16]; //por causa do '\0' seu troxa
 	int curtidas;
 	int retweets;
 	int mencoes;
-	struct tweet *tweets;
-	struct l_posts *posts;
-	struct l_menc *mencoes;
-	struct l_rts *retweets;
-	struct l_influ *influencia;
-	struct usuario *prox;
-}usuario;
-
-//Estruturas derivadas do usuario
-	
-typedef struct{
-	struct usuario *dado;
 	int posts;
-	struct l_posts *prox;
-	struct arv_posts *arvore;
-}l_posts;
+	int influencia;
+	struct tweet *tweets;
+	struct usuario *prox;
 
-typedef struct{
-	struct usuario *dado;
-	struct arv_posts *dir;
-	struct arv_posts *esq;
-}arv_posts;
-
-typedef struct{
-	struct usuario *dado;
-	int mencoes;
-	struct l_menc *prox;
-	struct arv_menc *arvore;
-}l_menc;
-
-typedef struct{
-	struct usuario *dado;
-	struct arv_menc *dir;
-	struct arv_menc *esq;
-}arv_menc;
-
-typedef struct{
-	struct usuario *dado;
-	int retweets;
-	struct l_rts *prox;
-	struct arv_rts *arvore;
-}l_rts;
-
-typedef struct{
-	struct usuario *dado;
-	struct arv_rts *dir;
-	struct arv_rts *esq;
-}arv_rts;
-
-typedef struct{
-	struct usuario *dado;
-	int influencia;	
-	struct l_influ *prox;
-	struct arv_influ *arvore;
-}l_influ;
-
-typedef struct{
-	struct usuario *dado;
-	struct arv_influ *dir;
-	struct arv_influ *esq;
-}arv_influ;
+	struct usuario *pont[4][3]; //[0=post, 1=menc, 2=rts, 3=influ][0=prox, 1=dir, 2=esq]
+}usuario;
 
 //Estruturas para tweets
 
@@ -73,38 +28,25 @@ typedef struct{
 	int curtidas;
 	int retweets;
 	struct lista_tweet *prox;
-	struct arv_tweet *arvore
 }tweet;
-
-typedef struct{
-	struct tweet *dado;
-	struct arv_tweet *dir;
-	struct arv_tweet *esq;
-}arv_tweet;
 
 //Estruturas para hashtags
 
 typedef struct{
-	char nome[30];
+	char nome[140];
 	int usos;
 	struct relacionadas *associadas;
-	struct hashtag *prox;
-	struct arv_hashtag *arvore;
+	
+	struct hashtag *pont[3];	//[0=prox(ordem de mais usados), 1=dir(menor alfabeticamente), 2=esq(maior alfabeticamente)]
 }hashtag;
-
-typedef struct{
-	struct hashtag *dado;
-	struct arv_hashtag *dir;
-	struct arv_hashtag *esq;
-}arv_hashtag;
 	
 typedef struct{
 	struct hashtag *dado;
 	int encontros;
-	struct relacionadas *prox;
-	struct arv_hashtag *arvore;
+	struct relacionadas *pont[3];	//[0=prox(ordem de mais usados), 1=dir(menor alfabeticamente), 2=esq(maior alfabeticamente)]
+	
 }relacionadas;
 
 //Funcoes 
 
-void learquivo(struct usuario pt_user struct hashtag ptl_hash, struct arv_hashtag ptarv_hash, struct tweet ptl_tweet, struct arv_tweet ptarv_tweet);
+int learquivo(usuario *raiz_u, usuario *ini_u, usuario *fim_u, hashtag *raiz_h, hashtag *ini_h, hashtag *fim_h);
