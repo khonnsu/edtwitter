@@ -6,6 +6,7 @@
 #DEFINE PROX 0
 #DEFINE DIR 1
 #DEFINE ESQ 2
+#DEFINE ANT 3
 
 
 typedef struct{
@@ -16,9 +17,8 @@ typedef struct{
 	int posts;
 	int influencia;
 	struct tweet *tweets;
-	struct usuario *prox;
 
-	struct usuario *pont[4][3]; //[0=post, 1=menc, 2=rts, 3=influ][0=prox, 1=dir, 2=esq]
+	struct usuario *pont[4][4]; //[0=post, 1=menc, 2=rts, 3=influ][0=prox, 1=dir, 2=esq]
 }usuario;
 
 //Estruturas para tweets
@@ -51,4 +51,58 @@ typedef struct{
 
 int learquivo(char *nome, usuario *raiz_u, usuario *ini_u, usuario *fim_u, hashtag *raiz_h, hashtag *ini_h, hashtag *fim_h);
 
-usuario verifica_exist(char *nick, usuario *raiz);
+usuario verifica_usuario(char *nick, usuario *raiz, usuario *ini, usuario *fim);
+
+
+
+usuario verifica_usuario(char *nick, usuario *raiz, usuario *ini, usuario *fim);{
+if(raiz!=NULL){
+	
+	int i =strcmp(nick,raiz.nickname);
+	if(i==0){	
+			return raiz;
+	}
+	
+	else if(i<0){
+		raiz[POST][ESQ]= verifica_exist(char *nick, raiz->pont[POST][ESQ]){
+	}
+		
+	else{
+		raiz[POST][DIR]= verifica_exist(char *nick, raiz->POST][DIR]){
+	}
+	
+}
+else{
+	usuario *novo;
+	usuario *aux;
+	novo= malloc(sizeof(usuario));
+	strcpy(novo.nickname,nick);
+	novo->curtidas= 0;
+	novo->retweets= 0;
+	novo->mencoes= 0;
+	novo->posts = 0;
+	novo->influencia = 0;
+	novo->tweets= NULL;
+
+	aux=fim;
+	if(aux.posts==0)
+	{
+		
+		while(strcmp(aux.nickname,raiz.nickname)<0)
+		{
+			aux=aux->ant;
+		}
+		
+		
+		//insere na lista
+		
+	}
+	struct usuario *pont[4][3]; //[0=post, 1=menc, 2=rts, 3=influ][0=prox, 1=dir, 2=esq]
+	return novo;
+}
+
+}
+
+			
+
+
