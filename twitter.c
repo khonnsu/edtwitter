@@ -37,3 +37,28 @@ int learquivo(char *nome,usuario *raiz_u, usuario *ini_u, usuario *fim_u, hashta
   }
 
 }
+
+
+
+
+usuario verifica_exist(char *nick, usuario *raiz){
+if(raiz!=NULL){
+	
+	
+	if(strcmp(nick,raiz.nickname)==0){	
+		return raiz;
+	}
+	
+	else if(strcmp(nick,raiz.nickname)<0){
+		return verifica_exist(char *nick, raiz->esq){
+	}
+		
+	else
+	{
+		return verifica_exist(char *nick, raiz->dir){
+	}
+}
+else
+	return NULL; 
+}
+
