@@ -49,4 +49,4 @@ typedef struct{
 
 //Funcoes 
 
-int learquivo(usuario *raiz_u, usuario *ini_u, usuario *fim_u, hashtag *raiz_h, hashtag *ini_h, hashtag *fim_h);
+int learquivo(char *nome, usuario *raiz_u, usuario *ini_u, usuario *fim_u, hashtag *raiz_h, hashtag *ini_h, hashtag *fim_h);
