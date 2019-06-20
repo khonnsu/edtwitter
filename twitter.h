@@ -1,7 +1,7 @@
 #DEFINE POST 0
 #DEFINE MENC 1
 #DEFINE RTS 2
-#DEFINE INFLU 3
+#DEFINE ENGA 3
 
 #DEFINE PROX 0
 #DEFINE DIR 1
@@ -12,13 +12,10 @@
 typedef struct{
 	char nickname[16]; //por causa do '\0' seu troxa
 	int curtidas;
-	int retweets;
-	int mencoes;
-	int posts;
-	int influencia;
+	int contador [4];	//[0=post, 1=menc, 2=rts, 3=enga]
 	struct tweet *tweets;
 
-	struct usuario *pont[4][4]; //[0=post, 1=menc, 2=rts, 3=influ][0=prox, 1=dir, 2=esq]
+	struct usuario *pont[4][4]; //[0=post, 1=menc, 2=rts, 3=enga][0=prox, 1=dir, 2=esq, 3= ant]
 }usuario;
 
 //Estruturas para tweets
@@ -49,6 +46,10 @@ typedef struct{
 
 //Funcoes 
 
-int learquivo(char *nome, usuario *raiz_u, usuario *ini_u, usuario *fim_u, hashtag *raiz_h, hashtag *ini_h, hashtag *fim_h);
+int learquivo(char *nome,usuario *raiz_post, usuario *ini_post, usuario *fim_post,usuario *raiz_menc, usuario *ini_menc, usuario *fim_menc, usuario *ini_rts, usuario *fim_rts,usuario *raiz_enga, usuario *ini_enga, usuario *fim_enga, hashtag *raiz_r, hashtag *ini_h, hashtag *fim_h);
 
-usuario verifica_usuario(char *nick, usuario *raiz, usuario *ini, usuario *fim);
+usuario verifica_usuario(char *nick,usuario *raiz_post, usuario *ini_post, usuario *fim_post,usuario *raiz_menc, usuario *ini_menc, usuario *fim_menc,usuario *raiz_rts, usuario *ini_rts, usuario *fim_rts,usuario *raiz_enga, usuario *ini_enga, usuario *fim_enga);
+
+usuario cria_user(char *nick, usuario *ini_post, usuario *fim_post,usuario *raiz_menc, usuario *ini_menc, usuario *fim_menc, usuario *ini_rts, usuario *fim_rts,usuario *raiz_enga, usuario *ini_enga, usuario *fim_enga);
+	
+uruario insere_lista_u(usuario *novo,int param,usuario *ini,usuario *fim);
