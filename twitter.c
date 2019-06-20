@@ -1,61 +1,69 @@
-int learquivo(char *nome,usuario *raiz_u, usuario *ini_u, usuario *fim_u, hashtag *raiz_h, hashtag *ini_h, hashtag *fim_h){
+int learquivo(char *nome,usuario *raiz_post, usuario *ini_post, usuario *fim_post,usuario *raiz_menc, usuario *ini_menc, usuario *fim_menc, usuario *ini_rts, usuario *fim_rts,usuario *raiz_enga, usuario *ini_enga, usuario *fim_enga, hashtag *raiz_r, hashtag *ini_h, hashtag *fim_h){
   FILE *arq;
   
   arq=fopen(nome,"r");
   if(arq==null)
     return -1;
   else{
-	usuario *user;
-	hashtag *hash;
-	tweet *t_lido;
-	  
-	char nick[16];
-    	char texto_tweet[141];
+      
+    usuario *user;
+    raiz_u = user;
+    ini_u = user;
+    fim_u = user;
+
+    hashtag *hash;
+    raiz_h = hash;
+    ini_h = hash;
+    fim_h = hash;
     
-    	while(!feof(arq)){
-    		fscanf("%*c%[^;]s",nick);
-    		user = verifica_usuario(nick);
-    		if(user == NULL){
-        		user=malloc(sizeof(user));
-        		user->nickname = nick;
-      		}
-		t_lido=malloc(sizeof(tweet));
-		fscanf("%[^#][^@][^;]s",t_lido->texto);		
-		
-		
-		
-		user=insere_tweet(tweet)
+    char nick[16];
+    char texto_tweet[141];
+    
+    while(!feof(arq)){
+      atual=malloc(sizeof(tweet));
+      scanf("%[^;]s",nick);
+      user = verifica_exist(nick, raiz_post, ini_post, fim_post,raiz_menc, ini_menc, fim_menc, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga );
+      if(user == NULL){
+        user=malloc(sizeof(user));
+        user->nickname = nick;
+      }
+      
       
           
-    	}
+    }
  
     
+    else
   }
 
 }
 
 
 
-usuario verifica_usuario(char *nick, usuario *raiz, usuario *ini, usuario *fim)
+
+
+
+
+usuario verifica_usuario(char *nick,usuario *raiz_post, usuario *ini_post, usuario *fim_post,usuario *raiz_menc, usuario *ini_menc, usuario *fim_menc,usuario *raiz_rts, usuario *ini_rts, usuario *fim_rts,usuario *raiz_enga, usuario *ini_enga, usuario *fim_enga)
 {
-    if(raiz!=NULL)
+    if(raiz_post!=NULL)
     {
 
-        int i =strcmp(nick,raiz.nickname);
+        int i =strcmp(nick,raiz_post->nickname);
         if(i==0)
         {
-            return raiz;
+            return raiz_post;
         }
 
         else if(i<0)
         {
-            if(raiz->pont[POST][ESQ]==NULL)
+            if(raiz_post->pont[POST][ESQ]==NULL)
             {
-                raiz[POST][ESQ]= verifica_exist(char *nick, raiz->pont[POST][ESQ]);
-                return raiz[POST][ESQ];
+                raiz_post->pont[POST][ESQ]= verifica_exist(nick, raiz_pont->pont[POST][ESQ], ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga);
+                return raiz_post->pont[POST][ESQ];
             }
             else
-                return verifica_exist(char *nick, raiz->pont[POST][ESQ]);
+                return verifica_exist(nick, raiz_post->pont[POST][ESQ], ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga);
 
         }
 
@@ -63,80 +71,124 @@ usuario verifica_usuario(char *nick, usuario *raiz, usuario *ini, usuario *fim)
         {
             if(raiz->pont[POST][DIR]==NULL)
             {
-                raiz[POST][DIR]= verifica_exist(char *nick, raiz->POST][DIR]);
-                return raiz[POST][DIR];
+                raiz_post->pont[POST][DIR]= verifica_exist(nick, raiz_post->pont[POST][DIR], ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga);
+                return raiz_post->pont[POST][DIR];
             }
             else
-                return verifica_exist(char *nick, raiz->POST][DIR]);
+                return verifica_exist(nick, raiz->pont[POST][DIR], ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga );
 
             }
 
     }
-
-
-
-    else
+    else // não encontrou na arvore e achou ponto para incerção
     {
-        usuario *novo;
+	    return cria_user(nick,ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga );
+    }	
+}	
+
+
+	
+	
+usuario cria_user(char *nick, usuario *ini_post, usuario *fim_post,usuario *raiz_menc, usuario *ini_menc, usuario *fim_menc, usuario *ini_rts, usuario *fim_rts,usuario *raiz_enga, usuario *ini_enga, usuario *fim_enga)
+{	
+	usuario *novo;
         novo= malloc(sizeof(usuario));
         strcpy(novo.nickname,nick);
         novo->curtidas= 0;
-        novo->retweets= 0;
-        novo->mencoes= 0;
-        novo->posts = 0;
-        novo->influencia = 0;
         novo->tweets= NULL;
+	    
+	int i, j;
+	for(i=0;i<4;i++)
+	{
+	    novo->contador[i]=0;
+	    for(j=0;j<4;j++)
+		    novo->pont[i][j]=NULL;
+	}
+	
+		insere_lista_u(novo, POST,ini_post,fim_post);
+		insere_lista_u(novo, MENC,ini_menc,fim_menc);
+		insere_lista_u(novo, RTS,ini_rts,fim_rts);
+		insere_lista_u(novo, ENGA,ini_enga,fim_enga);
 
-        if(fim!=NULL) // caso a lista não seja vazia
+        return novo;
+}
+
+
+
+
+
+usuario insere_lista_u(usuario *novo,int param,usuario *ini,usuario *fim){
+if(fim!=NULL) // caso a lista não seja vazia
         {
-	    usuario *aux;
+            usuario *aux;
             aux=fim;
-	
-	
-	    while(aux.posts > novo.posts && aux!=ini)
-            {
-                aux=aux->pont[POST][ANT];
-            }
-		
-            while(strcmp(novo.nickname,aux.nickname)<0 && aux.posts > novo.posts && aux!=ini)
-            {
-                aux=aux->pont[POST][ANT];
-            }
 
-            if(aux->pont[POST][PROX] == fim)
+            if(aux==ini)
             {
-                novo->pont[POST][ANT]=aux;
-                novo->pont[POST][PROX]=aux->pont[POST][PROX];
-                aux->pont[POST][PROX]=novo;
-                fim=novo;
-            }
-            else if(aux->pont[POST][ANT] == ini &&  aux.posts >= novo.posts && strcmp(novo.nickname,aux.nickname)<0)
-            {
-                novo->pont[POST][ANT]= NULL;
-                novo->pont[POST][PROX]= aux;
-                aux->pont[POST][ANT]= novo;
-                ini=novo;
+                if(strcmp(novo->nickname,aux->nickname)<0)
+                {
+                    novo->pont[param][ANT]= NULL;
+                    novo->pont[param][PROX]= aux;
+                    aux->pont[param][ANT]= novo;
+                    ini=novo;
+                }
+                else
+                {
+                    novo->pont[param][ANT]=aux;
+                    novo->pont[param][PROX]=NULL;
+                    aux->pont[param][PROX]=novo;
+                    fim=novo;
+                }
+
             }
             else
             {
-                usuario terceiro;
-                terceiro = aux->pont[POST][PROX];
+
+                while((aux->contador[param]) < (novo->contar[param]) && aux!=ini)	// encontra primeiro item da lista com numero >= de posts
+                {
+                    aux=aux->pont[param][ANT];
+                }
+
+                while(strcmp(novo->nickname,aux->nickname)<0 && aux->contador[param] == novo->contador[param] && aux!=ini) // acha ordem alfabetica dentro entre os itens com o mesmo numero de acessos (aux sera anterior a novo)
+                {
+                    aux=aux->pont[param][ANT];
+                }
+		    
+
+                if(aux == fim)	// caso tenha que inserir o novo no fim da lista
+                {
+                    novo->pont[param][ANT]=aux;
+                    novo->pont[param][PROX]=NULL;
+                    aux->pont[param][PROX]=novo;
+                    fim=novo;
+                }
+                else if(aux == ini &&  aux->contador[param] == novo->contador[param] && strcmp(novo->nickname,aux->nickname)<0) //// caso tenha que inserir o novo no inicio da lista
+                {
+                    novo->pont[param][ANT]= NULL;
+                    novo->pont[param][PROX]= aux;
+                    aux->pont[param][ANT]= novo;
+                    ini=novo;
+                }
+                else
+                {
+                    usuario terceiro;
+                    terceiro = aux->pont[param][PROX];
 
 
-                aux->pont[POST][PROX] = novo;
-                terceiro->pont[POST][ANT] = novo;
+                    aux->pont[param][PROX] = novo;
+                    terceiro->pont[param][ANT] = novo;
 
-                novo->pont[POST][ANT]= aux;
-                novo->pont[POST][PROX]= terceiro;
+                    novo->pont[param][ANT]= aux;
+                    novo->pont[param][PROX]= terceiro;
+                }
+            }
+            else
+            {
+                novo->pont[param][ANT]=NULL;
+                novo->pont[param][PROX]=NULL;
             }
         }
-        else
-        {
-            novo->pont[POST][ANT]=NULL;
-            novo->pont[POST][PROX]=NULL;
-        }
-
-        return novo;
-    }
+	
+	return novo;
 
 }
