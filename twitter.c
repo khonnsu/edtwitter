@@ -60,7 +60,7 @@ usuario verifica_usuario(char *nick,usuario *raiz_post, usuario *ini_post, usuar
             if(raiz_post->pont[POST][ESQ]==NULL)
             {
                 raiz_post->pont[POST][ESQ]= verifica_exist(nick, raiz_pont->pont[POST][ESQ], ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga);
-                return raiz_post->pont[POST][ESQ];
+		return raiz_post->pont[POST][ESQ];
             }
             else
                 return verifica_exist(nick, raiz_post->pont[POST][ESQ], ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga);
@@ -118,7 +118,7 @@ usuario cria_user(char *nick, usuario *ini_post, usuario *fim_post,usuario *raiz
 
 
 usuario insere_lista_u(usuario *novo,int param,usuario *ini,usuario *fim){
-if(fim!=NULL) // caso a lista não seja vazia
+	if(fim!=NULL) // caso a lista não seja vazia
         {
             usuario *aux;
             aux=fim;
