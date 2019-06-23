@@ -18,10 +18,13 @@ int learquivo(char *nome,usuario *raiz_post, usuario *ini_post, usuario *fim_pos
     
     char nick[16];
     char texto_tweet[141];
+    int rts;
+    int likes;
     
     while(!feof(arq)){
       atual=malloc(sizeof(tweet));
-      scanf("%[^;]s",nick);
+      fscanf(arq ,"%[^;]s",nick);
+      fscanf(arq ,"%[^;]s",texto_tweet);
       user = verifica_exist(nick, raiz_post, ini_post, fim_post,raiz_menc, ini_menc, fim_menc, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga );
       if(user == NULL){
         user=malloc(sizeof(user));
