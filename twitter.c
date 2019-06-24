@@ -65,7 +65,9 @@ usuario verifica_usuario(char *nick,tweet *lido,usuario *raiz_post, usuario *ini
 	    
 	    raiz_post->contador[ENGA]= raiz_post->curtidas + raiz_post->contador[MENC] + raiz_post->contador[RTS];	// atualiza o engajamento
 
-	    raiz_post= atualiza_lista_u(raiz_post, POST,ini_post,fim_post);
+	    if(atualiza_lista_u(raiz_post, POST,ini_post,fim_post))
+                atualiza_arvore_u(raiz_post,POST,raiz_post);
+
 	    raiz_post= atualiza_lista_u(raiz_post, MENC,ini_menc,fim_menc);
 	    raiz_post= atualiza_lista_u(raiz_post, RTS,ini_rts,fim_rts);
 	    raiz_post= atualiza_lista_u(raiz_post, ENGA,ini_enga,fim_enga);		//atualiza listas
@@ -179,7 +181,7 @@ usuario insere_lista_u(usuario *novo,int param,usuario *ini,usuario *fim){
 }
 
 
-usuario atualiza_lista_u(usuario *user,int param,usuario *ini,usuario *fim){
+int atualiza_lista_u(usuario *user,int param,usuario *ini,usuario *fim){
 	if(user!=ini)
 		if(user->contador[param] > user->pont[param][ANT]->contador[param])
 		{
@@ -200,10 +202,10 @@ usuario atualiza_lista_u(usuario *user,int param,usuario *ini,usuario *fim){
 			user= tira_lista(user, param);
 			user= insere_pre_aux(user, aux, param);
 		
-	
+	                 return 1
 		}
-	
-	return user;
+	         else
+                    return 0;
 	
 	
 }
@@ -249,7 +251,17 @@ usuario insere_pre_aux(usuario *user, usuario *aux,int param, usuario *ini,usuar
 }
 
 
+usuario atualiza_arvore_u(usuario *procurado,int param,usuario *raiz){
+   if(procurado!=raiz)
+     if(procurado->contador[param] < raiz->contador[param])
+        if(strcmp(procurado->nickname,raiz->nickname)<0)
+           raiz->pont[param][ESQ]= atualiza_arvore_u(procurado,param,raiz->pont[param][ESQ]);
+        else
+           raiz->pont[param][DIR]= atualiza_arvore_u(procurado,param,raiz->pont[param][DIR]);
 
+     else
+
+}
 
 tweet insere_lista_t(tweet *novo,tweet *ini,tweet *fim){
 	if(fim!=NULL) // caso a lista não seja vazia
