@@ -53,7 +53,7 @@ usuario verifica_usuario(char *nick,tweet *lido,usuario *raiz_post, usuario *ini
 
 usuario cria_user(char *nick, tweet *lido, int flag_menc, usuario *ini_post, usuario *fim_post,usuario *raiz_menc, usuario *ini_menc, usuario *fim_menc, usuario *ini_rts, usuario *fim_rts,usuario *raiz_enga, usuario *ini_enga, usuario *fim_enga);
 	
-uruario insere_lista_u(usuario *novo,int param,usuario *ini,usuario *fim);
+usuario insere_lista_u(usuario *novo,int param,usuario *ini,usuario *fim);
 
 usuario atualiza_lista_u(usuario *novo,int param,usuario *ini,usuario *fim);
 
