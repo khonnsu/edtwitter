@@ -54,7 +54,7 @@ int learquivo(char *nome,usuario *raiz_post, usuario *ini_post, usuario *fim_pos
       fscanf(arq ,"%d",&atual->curtidas);
       fseek(arq, 1, SEEK_CUR);
 	      
-      verifica_exist(nick, atual, raiz_post, ini_post, fim_post,raiz_menc, ini_menc, fim_menc, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga ); 
+      verifica_exist(nick, atual, raiz_post, NULL, ini_post, fim_post,raiz_menc, ini_menc, fim_menc, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga ); 
        
       insere_lista_t(atual, rank_ini,rank_fim);
     }
@@ -69,6 +69,7 @@ int learquivo(char *nome,usuario *raiz_post, usuario *ini_post, usuario *fim_pos
 
 
 usuario verifica_usuario(char *nick,tweet *lido,usuario *raiz_post, usuario *ini_post, usuario *fim_post,usuario *raiz_menc, usuario *ini_menc, usuario *fim_menc,usuario *raiz_rts, usuario *ini_rts, usuario *fim_rts,usuario *raiz_enga, usuario *ini_enga, usuario *fim_enga)
+usuario verifica_usuario(char *nick,tweet *lido                                             ,usuario *raiz_post, usuario *ini_post, usuario *fim_post,usuario *raiz_menc, usuario *ini_menc, usuario *fim_menc,usuario *raiz_rts, usuario *ini_rts, usuario *fim_rts,usuario *raiz_enga, usuario *ini_enga, usuario *fim_enga)
 {
     if(raiz_post!=NULL)
     {
@@ -89,11 +90,10 @@ usuario verifica_usuario(char *nick,tweet *lido,usuario *raiz_post, usuario *ini
 	    raiz_post->contador[ENGA]= raiz_post->curtidas + raiz_post->contador[MENC] + raiz_post->contador[RTS];	// atualiza o engajamento
 
 	    if(atualiza_lista_u(raiz_post, POST,ini_post,fim_post))
-                atualiza_arvore_u(raiz_post,POST,raiz_post);
-
-	    raiz_post= atualiza_lista_u(raiz_post, MENC,ini_menc,fim_menc);
-	    raiz_post= atualiza_lista_u(raiz_post, RTS,ini_rts,fim_rts);
-	    raiz_post= atualiza_lista_u(raiz_post, ENGA,ini_enga,fim_enga);		//atualiza listas
+                atualiza_arvore_u(raiz_post,pai,POST);
+		
+	    atualiza_lista_u(raiz_post, RTS,ini_rts,fim_rts);
+	    atualiza_lista_u(raiz_post, ENGA,ini_enga,fim_enga);		//atualiza listas
 		
 		
             return raiz_post;
@@ -103,11 +103,11 @@ usuario verifica_usuario(char *nick,tweet *lido,usuario *raiz_post, usuario *ini
         {
             if(raiz_post->pont[POST][ESQ]==NULL)
             {
-                raiz_post->pont[POST][ESQ]= verifica_exist(nick, lido, raiz_pont->pont[POST][ESQ], ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga);
+                raiz_post->pont[POST][ESQ]= verifica_exist(nick, lido, raiz_pont->pont[POST][ESQ], pai, raiz_post, ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga);
 		return raiz_post->pont[POST][ESQ];
             }
             else
-                return verifica_exist(nick, lido, raiz_post->pont[POST][ESQ], ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga);
+                return verifica_exist(nick, lido, raiz_post->pont[POST][ESQ], pai, ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga);
 
         }
 
@@ -115,12 +115,11 @@ usuario verifica_usuario(char *nick,tweet *lido,usuario *raiz_post, usuario *ini
         {
             if(raiz->pont[POST][DIR]==NULL)
             {
-                raiz_post->pont[POST][DIR]= verifica_exist(nick,lido, raiz_post->pont[POST][DIR], ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga);
+                raiz_post->pont[POST][DIR]= verifica_exist(nick,lido, raiz_post->pont[POST][DIR],pai, ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga);
                 return raiz_post->pont[POST][DIR];
             }
             else
-                return verifica_exist(nick,lido, raiz->pont[POST][DIR], ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga );
-
+                return verifica_exist(nick,lido, raiz->pont[POST][DIR],pai, ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga );
             }
 
     }
