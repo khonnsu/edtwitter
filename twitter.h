@@ -8,6 +8,9 @@
 #DEFINE ESQ 2
 #DEFINE ANT 3
 
+#DEFINE INI 0
+#DEFINE FIM 1
+#DEFINE RAIZ 2
 
 typedef struct{
 	char nickname[16]; //por causa do '\0' seu troxa
