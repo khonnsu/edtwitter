@@ -17,14 +17,37 @@ int learquivo(char *nome,usuario *raiz_post, usuario *ini_post, usuario *fim_pos
     fim_h = hash;
     
     char nick[16];
+    char simbolo;
+    int fimtexto = 0;
+    char mencionado[16];
+    char hashtag[140];
     tweet atual;
     
     while(!feof(arq)){
       atual=malloc(sizeof(tweet));
 	    
+      fseek(arq, 1, SEEK_CUR);
       fscanf(arq ,"%[^;]s",nick);
       fseek(arq, 1, SEEK_CUR);
-      fscanf(arq ,"%[^;]s",atual->texto);
+      do{
+      	fscanf(arq ,"%[^;@#]s",atual->texto);
+      	fscanf(arq,"%c",simbolo);
+      	switch(simbolo){
+		case '@':
+	   		fscanf(arq,"%[^; ]s",mencionado);
+	   		//verifica se existe usuario e insere em árvore de mais mencionados
+	   		strcat(atual->texto,"@");
+	  		strcat(atual->texto,auxnick);
+			break;
+		case '#':
+			fscanf(arq,"%[^; ]s",hashtag);
+			//verifica se existe hashtag e insere em árvore de mais usadas
+			strcat(atual->texto,"#");
+			strcat(atual->texto,hashtag);
+		case ';':
+			fimtexto=1;
+	}
+      }while(!fimtexto);	
       fseek(arq, 1, SEEK_CUR);
       fscanf(arq ,"%d",&atual->retweets);
       fseek(arq, 1, SEEK_CUR);
