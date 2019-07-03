@@ -59,16 +59,22 @@ typedef struct{
 
 int learquivo(char *nome,usuario *raiz_post, usuario *ini_post, usuario *fim_post,usuario *raiz_menc, usuario *ini_menc, usuario *fim_menc, usuario *ini_rts, usuario *fim_rts,usuario *raiz_enga, usuario *ini_enga, usuario *fim_enga, hashtag *raiz_r, hashtag *ini_h, hashtag *fim_h, tweet *rank_ini, tweet *rank_fim);
 
-usuario verifica_usuario(char *nick,tweet *lido,usuario *raiz_post, usuario *ini_post, usuario *fim_post,usuario *raiz_menc, usuario *ini_menc, usuario *fim_menc,usuario *raiz_rts, usuario *ini_rts, usuario *fim_rts,usuario *raiz_enga, usuario *ini_enga, usuario *fim_enga);
+usuario verifica_usuario(char *nick, tweet *lido, int param, usario *pai, usuario **P_U_AeL, tweet **P_T_L);
 
-usuario cria_user(char *nick, tweet *lido, int flag_menc, usuario *ini_post, usuario *fim_post,usuario *raiz_menc, usuario *ini_menc, usuario *fim_menc, usuario *ini_rts, usuario *fim_rts,usuario *raiz_enga, usuario *ini_enga, usuario *fim_enga);
+usuario cria_user(char *nick, tweet *lido, int flag_menc, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L);
 	
-usuario insere_lista_u(usuario *novo,int param,usuario *ini,usuario *fim);
+usuario insere_lista_u(usuario *novo, int param, usuario **P_U_AeL);
 
-usuario atualiza_lista_u(usuario *novo,int param,usuario *ini,usuario *fim);
+int atualiza_lista (usuario *user, int param, usuario **P_U_AeL);
 
-usuario tira_lista(usuario *user,int param, usuario *ini,usuario *fim);
+usuario tira_lista(usuario *user, int param, usuario **P_U_AeL);
 
-usuario insere_pre_aux(usuario *user, usuario *aux,int param, usuario *ini,usuario *fim);
+usuario insere_pre_aux(usuario *user, usario *aux, int param, usuario **P_U_AeL);
+
+void atualiza_arvore_u(usuario *filho, usuario *pai, usuario *vo, int param, usuario **P_U_AeL);
 
 tweet insere_lista_t(tweet *novo,tweet *ini,tweet *fim);
+
+usuario verifica_hashtag(char *nick, tweet *lido, int param, usuario *raiz, usuario *pai, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L);
+
+
