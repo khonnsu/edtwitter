@@ -675,3 +675,15 @@ void atualiza_arvore_u(usuario *filho,usuario *pai,usuario *vo,int param,usuario
 	   
    }	   
 }
+
+void leparametros(FILE *arquivo, ops *op){
+	fscanf(arquivo,"%*2c%d",op->a);
+	fscanf(arquivo,"%*3c%d",op->b);
+	fscanf(arquivo,"%*3c%d",op->c);
+	fscanf(arquivo,"%*3c%d",op->d);
+	fscanf(arquivo,"%*3c%d",op->e);
+	fscanf(arquivo,"%*3c%d",op->f);
+	fscanf(arquivo,"%*3c%*[ #]%s",op->g);
+
+	fclose(arquivo);
+}
