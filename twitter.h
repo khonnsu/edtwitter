@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+
 #DEFINE POST 0
 #DEFINE MENC 1
 #DEFINE RTS 2
@@ -27,8 +31,8 @@ typedef struct{
 	char texto[141];
 	int curtidas;
 	int retweets;
-	struct lista_tweet *rank[4]; //[0=prox,3=ant]
-	struct lista_tweet *prox_user;
+	struct tweet *pont[4]; //[0=prox,3=ant]
+	struct tweet *prox_user;
 	l_hash *eh_as_hash;
 	
 }tweet;
@@ -54,6 +58,16 @@ typedef struct{
 	struct hashtag *dado;
 	struct l_hash *prox;
 }l_hash;
+
+typedef struct{
+	int a;
+	int b;
+	int c;
+	int d;
+	int e;
+	int f;
+	char g[279];
+}ops;
 
 //Funcoes 
 
