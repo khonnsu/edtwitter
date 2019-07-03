@@ -107,30 +107,19 @@ if(pai==NULL)
 
         else if(i<0)
         {
-            if(raiz->pont[param][ESQ]==NULL)
-            {
                 raiz->pont[param][ESQ]= verifica_exist(nick, lido, param, raiz->pont[param][ESQ], raiz, P_U_AeL, P_H_AeL, tweet P_T_L);
 		    atualiza_arvore_u(raiz->pont[param][ESQ], raiz, pai, param, P_U_AeL);
 		return raiz;
-            }
-            else
-                return verifica_exist(nick, lido, param,raiz->pont[param][ESQ], raiz, P_U_AeL, P_H_AeL, tweet P_T_L);
-
         }
 
         else
         {
-            if(raiz->pont[param][DIR]==NULL)
-            {
+
                 raiz->pont[param][DIR]= verifica_exist(nick,lido,param, raiz->pont[POST][DIR], raiz, P_U_AeL, P_H_AeL, tweet P_T_L);
 		    atualiza_arvore_u(raiz->pont[param][DIR], raiz, pai, param, P_U_AeL);
-                return raiz->pont[param][DIR];
-            }
-            else
-                return verifica_exist(nick,lido,param, raiz->pont[param][DIR],raiz, P_U_AeL, P_H_AeL, tweet P_T_L );
-            }
-
-    }
+                return raiz;
+        }
+	    
     else // não encontrou na arvore e achou ponto para incerção
     {
        switch(param)
@@ -421,67 +410,61 @@ tweet insere_lista_t(tweet *novo,tweet *ini,tweet *fim){
 
 
 
-usuario verifica_hashtag(char *nick,tweet *lido,int param,usuario *raiz,usuario *pai, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
+
+
+
+
+
+
+
+
+
+
+hashtag *verifica_hashtag(char *hash, l_hash *mesmo_T, hashtag *raiz, hashtag *pai, hashtag **P_H_AeL)
 {
 if(pai==NULL)
-  raiz= P_U_AeL[param][RAIZ];
+  raiz= P_H_AeL[RAIZ];
 	
     if(raiz!=NULL)
     {
 
-        int i =strcmp(nick,raiz->nickname);
+        int i =strcmp(hash,raiz->nome);
         if(i==0)
         {
-	switch(param)
-	{
-	    case POST:
-	    	lido->prox_user= raiz->tweets;
-	    	raiz->tweets= lido;			//insere na lista de posts do usuario
+	    raiz->usos++; // incrementa contador de usos da hashtag
 		
-		
-	        raiz->contador[POSTS]++; // incrementa contador de numero de posts
-		
-	        raiz->curtidas += lido->curtidas;	// soma o numero de curtidas do novo tweet
-		
-	        raiz->contador[RTS] += lido->retweets;	//soma o numero de rts do novo tweet
-	    
-	        raiz->contador[ENGA]= raiz->curtidas + raiz->contador[MENC] + raiz->contador[RTS];	// atualiza o engajamento
-			
-			
-		atualiza_lista_u(raiz,POST,P_U_AeL)		
-	   	atualiza_lista_u(raiz, RTS,P_U_AeL);
-	        atualiza_lista_u(raiz, ENGA,P_U_AeL);		//atualiza listas
-	    break;
-			
-	    case MENC:
-		raiz->contador[MENC]++; // incrementa contador de numero de MENÇÕES
-		raiz->contador[ENGA]= raiz->curtidas + raiz->contador[MENC] + raiz->contador[RTS];	// atualiza o engajamento
-			
-		atualiza_lista_u(raiz, ENGA,P_U_AeL);		//atualiza lista
-	    break;
-			
-	}
-            return raiz;
+	    atualiza_lista_h(raiz ,P_H_AeL)		//atualiza lista
+		    
+	   l_hash *novo, *aux;
+           novo->dado= raiz;
+	   novo->prox= NULL;
+	   aux= mesmoT;
+	   while(aux->prox!=NULL)
+	       aux=aux->prox;
+	   aux->prox=novo;
+	  
+	
+           return raiz;
         }
 
         else if(i<0)
         {
-            if(raiz->pont[param][ESQ]==NULL)
+            if(raiz->pont[ESQ]==NULL)
             {
-                raiz->pont[param][ESQ]= verifica_exist(nick, lido, param, raiz->pont[param][ESQ], raiz, P_U_AeL, P_H_AeL, tweet P_T_L);
-		    atualiza_arvore_u(raiz->pont[param][ESQ], raiz, pai, param, P_U_AeL);
+		raiz->pont[ESQ] = verifica_hashtag(hash ,mesmo_T , raiz->pont[ESQ], raiz, P_H_AeL);
+		    atualiza_arvore_h(raiz->pont[ESQ], raiz, pai, P_U_AeL);
 		return raiz;
             }
             else
-                return verifica_exist(nick, lido, param,raiz->pont[param][ESQ], raiz, P_U_AeL, P_H_AeL, tweet P_T_L);
+                return verifica_hashtag(hash ,mesmo_T , raiz->pont[ESQ], raiz, P_H_AeL);
 
         }
 
         else
         {
-            if(raiz->pont[param][DIR]==NULL)
+            if(raiz->pont[DIR]==NULL)
             {
-                raiz->pont[param][DIR]= verifica_exist(nick,lido,param, raiz->pont[POST][DIR], raiz, P_U_AeL, P_H_AeL, tweet P_T_L);
+                raiz->pont[DIR]= verifica_exist(hash,lido,param, raiz->pont[POST][DIR], raiz, P_U_AeL, P_H_AeL, tweet P_T_L);
 		    atualiza_arvore_u(raiz->pont[param][DIR], raiz, pai, param, P_U_AeL);
                 return raiz->pont[param][DIR];
             }
@@ -496,7 +479,6 @@ if(pai==NULL)
 	{
 	       case POST:
 		return cria_user(nick, lido, 0, P_U_AeL, P_H_AeL, tweet P_T_L);
-    		
 	       break;
 		       
 	       case MENC:
