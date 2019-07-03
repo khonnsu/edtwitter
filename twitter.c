@@ -1,27 +1,27 @@
-int learquivo(char *nome,usuario *raiz_post, usuario *ini_post, usuario *fim_post,usuario *raiz_menc, usuario *ini_menc, usuario *fim_menc, usuario *ini_rts, usuario *fim_rts,usuario *raiz_enga, usuario *ini_enga, usuario *fim_enga, hashtag *raiz_r, hashtag *ini_h, hashtag *fim_h, tweet *rank_ini, tweet *rank_fim){
+/*
+usuario **P_U_AeL[4][3] = [0=post, 1=menc, 2=rts, 3=enga]	[0=ini, 1=fim, 2=raiz]
+hashtag **P_H_AeL[3] = [0=ini, 1=fim, 2=raiz]
+tweet **P_H_L[2] =  [0=ini, 1=fim]
+*/
+int learquivo(char *nome,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L){
   FILE *arq;
   
   arq=fopen(nome,"r");
   if(arq==null)
     return -1;
   else{
+	  
+	  
       
     usuario *user;
-    raiz_u = user;
-    ini_u = user;
-    fim_u = user;
-
     hashtag *hash;
-    raiz_h = hash;
-    ini_h = hash;
-    fim_h = hash;
-    
+    tweet *atual;
+	  
     char nick[16];
     char simbolo;
     int fimtexto = 0;
     char mencionado[16];
     char hashtag[140];
-    tweet atual;
     
     while(!feof(arq)){
       atual=malloc(sizeof(tweet));
@@ -54,7 +54,7 @@ int learquivo(char *nome,usuario *raiz_post, usuario *ini_post, usuario *fim_pos
       fscanf(arq ,"%d",&atual->curtidas);
       fseek(arq, 1, SEEK_CUR);
 	      
-      verifica_exist(nick, atual, raiz_post, NULL, ini_post, fim_post,raiz_menc, ini_menc, fim_menc, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga ); 
+      verifica_exist(nick, atual, POST, NULL, NULL, P_U_AeL, P_H_AeL, P_T_L)   
        
       insere_lista_t(atual, rank_ini,rank_fim);
     }
@@ -65,74 +65,95 @@ int learquivo(char *nome,usuario *raiz_post, usuario *ini_post, usuario *fim_pos
 
 
 
-
-
-
-usuario verifica_usuario(char *nick,tweet *lido,usuario *raiz_post, usuario *ini_post, usuario *fim_post,usuario *raiz_menc, usuario *ini_menc, usuario *fim_menc,usuario *raiz_rts, usuario *ini_rts, usuario *fim_rts,usuario *raiz_enga, usuario *ini_enga, usuario *fim_enga)
-usuario verifica_usuario(char *nick,tweet *lido                                             ,usuario *raiz_post, usuario *ini_post, usuario *fim_post,usuario *raiz_menc, usuario *ini_menc, usuario *fim_menc,usuario *raiz_rts, usuario *ini_rts, usuario *fim_rts,usuario *raiz_enga, usuario *ini_enga, usuario *fim_enga)
+usuario verifica_usuario(char *nick,tweet *lido,int param,usuario *raiz, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
 {
-    if(raiz_post!=NULL)
+if(pai==NULL)
+  raiz= P_U_AeL[param][RAIZ];
+	
+    if(raiz!=NULL)
     {
 
-        int i =strcmp(nick,raiz_post->nickname);
+        int i =strcmp(nick,raiz->nickname);
         if(i==0)
         {
-	    lido->prox_user= raiz_post->tweets;
-	    raiz_post->tweets= lido;			//insere na lista de posts do usuario
+	switch(param)
+	{
+	    case POST:
+	    	lido->prox_user= raiz->tweets;
+	    	raiz->tweets= lido;			//insere na lista de posts do usuario
 		
 		
-	    raiz_post->contador[POSTS]++; // incrementa contador de numero de posts
+	        raiz->contador[POSTS]++; // incrementa contador de numero de posts
 		
-	    raiz_post->curtidas += lido->curtidas;	// soma o numero de curtidas do novo tweet
+	        raiz->curtidas += lido->curtidas;	// soma o numero de curtidas do novo tweet
 		
-	    raiz_post->contador[RTS] += lido->retweets;	//soma o numero de rts do novo tweet
+	        raiz->contador[RTS] += lido->retweets;	//soma o numero de rts do novo tweet
 	    
-	    raiz_post->contador[ENGA]= raiz_post->curtidas + raiz_post->contador[MENC] + raiz_post->contador[RTS];	// atualiza o engajamento
-
-	    if(atualiza_lista_u(raiz_post, POST,ini_post,fim_post))
-                atualiza_arvore_u(raiz_post,pai,POST);
-		
-	    atualiza_lista_u(raiz_post, RTS,ini_rts,fim_rts);
-	    atualiza_lista_u(raiz_post, ENGA,ini_enga,fim_enga);		//atualiza listas
-		
-		
-            return raiz_post;
+	        raiz->contador[ENGA]= raiz->curtidas + raiz->contador[MENC] + raiz->contador[RTS];	// atualiza o engajamento
+			
+			
+		atualiza_lista_u(raiz,POST,P_U_AeL)		
+	   	atualiza_lista_u(raiz, RTS,P_U_AeL);
+	        atualiza_lista_u(raiz, ENGA,P_U_AeL);		//atualiza listas
+	    break;
+			
+	    case MENC:
+		raiz->contador[MENC]++; // incrementa contador de numero de MENÇÕES
+		raiz->contador[ENGA]= raiz->curtidas + raiz->contador[MENC] + raiz->contador[RTS];	// atualiza o engajamento
+			
+		atualiza_lista_u(raiz, ENGA,P_U_AeL);		//atualiza lista
+	    break;
+			
+	}
+            return raiz;
         }
 
         else if(i<0)
         {
-            if(raiz_post->pont[POST][ESQ]==NULL)
+            if(raiz->pont[param][ESQ]==NULL)
             {
-                raiz_post->pont[POST][ESQ]= verifica_exist(nick, lido, raiz_pont->pont[POST][ESQ], pai, raiz_post, ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga);
-		return raiz_post->pont[POST][ESQ];
+                raiz->pont[param][ESQ]= verifica_exist(nick, lido, param, raiz->pont[param][ESQ], raiz, P_U_AeL, P_H_AeL, tweet P_T_L);
+		    atualiza_arvore_u(raiz->pont[param][ESQ], raiz, pai, param, P_U_AeL);
+		return raiz;
             }
             else
-                return verifica_exist(nick, lido, raiz_post->pont[POST][ESQ], pai, ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga);
+                return verifica_exist(nick, lido, param,raiz->pont[param][ESQ], raiz, P_U_AeL, P_H_AeL, tweet P_T_L);
 
         }
 
         else
         {
-            if(raiz->pont[POST][DIR]==NULL)
+            if(raiz->pont[param][DIR]==NULL)
             {
-                raiz_post->pont[POST][DIR]= verifica_exist(nick,lido, raiz_post->pont[POST][DIR],pai, ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga);
-                return raiz_post->pont[POST][DIR];
+                raiz->pont[param][DIR]= verifica_exist(nick,lido,param, raiz->pont[POST][DIR], raiz, P_U_AeL, P_H_AeL, tweet P_T_L);
+		    atualiza_arvore_u(raiz->pont[param][DIR], raiz, pai, param, P_U_AeL);
+                return raiz->pont[param][DIR];
             }
             else
-                return verifica_exist(nick,lido, raiz->pont[POST][DIR],pai, ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga );
+                return verifica_exist(nick,lido,param, raiz->pont[param][DIR],raiz, P_U_AeL, P_H_AeL, tweet P_T_L );
             }
 
     }
     else // não encontrou na arvore e achou ponto para incerção
     {
-	    return cria_user(nick, lido, 0,ini_post, fim_post,raiz_menc, ini_menc, fim_menc, raiz_rts, ini_rts, fim_rts, raiz_enga, ini_enga, fim_enga );
+       switch(param)
+	{
+	       case POST:
+		return cria_user(nick, lido, 0, P_U_AeL, P_H_AeL, tweet P_T_L);
+    		
+	       break;
+		       
+	       case MENC:
+		  return cria_user(nick, NULL, 1, P_U_AeL, P_H_AeL, tweet P_T_L);
+	       break;
+       }
     }	
 }	
 
 
 	
 	
-usuario cria_user(char *nick, tweet *lido, int flag_menc, usuario *ini_post, usuario *fim_post,usuario *raiz_menc, usuario *ini_menc, usuario *fim_menc, usuario *ini_rts, usuario *fim_rts,usuario *raiz_enga, usuario *ini_enga, usuario *fim_enga)
+usuario cria_user(char *nick, tweet *lido, int flag_menc, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
 {	
 	usuario *novo;
         novo= malloc(sizeof(usuario));
@@ -161,10 +182,10 @@ usuario cria_user(char *nick, tweet *lido, int flag_menc, usuario *ini_post, usu
 	}
 	
 	
-		insere_lista_u(novo, POST,ini_post,fim_post);
-		insere_lista_u(novo, MENC,ini_menc,fim_menc);
-		insere_lista_u(novo, RTS,ini_rts,fim_rts);
-		insere_lista_u(novo, ENGA,ini_enga,fim_enga);
+		insere_lista_u(novo, POST,P_U_AeL);
+		insere_lista_u(novo, MENC,P_U_AeL);
+		insere_lista_u(novo, RTS,P_U_AeL);
+		insere_lista_u(novo, ENGA,P_U_AeL);
 
         return novo;
 }
@@ -173,8 +194,8 @@ usuario cria_user(char *nick, tweet *lido, int flag_menc, usuario *ini_post, usu
 
 
 
-usuario insere_lista_u(usuario *novo,int param,usuario *ini,usuario *fim){
-	if(fim!=NULL) // caso a lista não seja vazia
+usuario insere_lista_u(usuario *novo,int param,usuario **P_U_AeL){
+	if(P_U_AeL[param][FIM]!=NULL) // caso a lista não seja vazia
         {
             usuario *aux;
             aux=fim;
@@ -188,7 +209,10 @@ usuario insere_lista_u(usuario *novo,int param,usuario *ini,usuario *fim){
                 {
                     aux=aux->pont[param][ANT];
                 }
-		    
+		 
+		if(aux==NULL)
+		   P_U_AeL[param][INI]=novo;
+		
 		novo= insere_pre_aux(novo, aux, param);
                 
         }
@@ -203,7 +227,7 @@ usuario insere_lista_u(usuario *novo,int param,usuario *ini,usuario *fim){
 }
 
 
-int atualiza_lista_u(usuario *user,int param,usuario *ini,usuario *fim){
+int atualiza_lista_u(usuario *user,int param,usuario **P_U_AeL){
 	if(user!=ini)
 		if(user->contador[param] > user->pont[param][ANT]->contador[param])
 		{
@@ -212,6 +236,7 @@ int atualiza_lista_u(usuario *user,int param,usuario *ini,usuario *fim){
 	
 			while(aux!=NULL && (aux->contador[param] < user->contador[param]))
 			{
+				
 				aux= aux->pont[param][ANT];
 			}
 	
@@ -220,21 +245,21 @@ int atualiza_lista_u(usuario *user,int param,usuario *ini,usuario *fim){
 				aux= aux->pont[param][ANT];
 			}
 			
-			
+			if(user==fim)
+			   fim= user->pont[param][ANT];
 			user= tira_lista(user, param);
 			user= insere_pre_aux(user, aux, param);
 		
-	                 return 1
+	                 return 1;
 		}
-	         else
                     return 0;
-	
+
 	
 }
 
-usuario tira_lista(usuario *user,int param, usuario *ini,usuario *fim)
+usuario tira_lista(usuario *user,int param, usuario **P_U_AeL)
 {
-	if(user == fim){
+	if(user == P_U_AeL[param][FIM]){
 		user->pont[param][ANT]->pont[param][PROX] = NULL;
 		fim= user->pont[param][ANT];
 		user->pont[param][ANT]= NULL;
@@ -250,12 +275,12 @@ usuario tira_lista(usuario *user,int param, usuario *ini,usuario *fim)
 	
 }
 
-usuario insere_pre_aux(usuario *user, usuario *aux,int param, usuario *ini,usuario *fim){
+usuario insere_pre_aux(usuario *user, usuario *aux,int param, usuario **P_U_AeL){
 	if(aux==NULL)
 	{
-		user->pont[param][PROX]=ini;
-		ini->pont[param][ANT]= user;
-		ini= user;
+		user->pont[param][PROX]=P_U_AeL[param][INI];
+		P_U_AeL[param][INI]->pont[param][ANT]= user;
+		P_U_AeL[param][INI]= user;
 	}
 	else
 	{
@@ -273,16 +298,52 @@ usuario insere_pre_aux(usuario *user, usuario *aux,int param, usuario *ini,usuar
 }
 
 
-usuario atualiza_arvore_u(usuario *procurado,int param,usuario *raiz){
-   if(procurado!=raiz)
-     if(procurado->contador[param] < raiz->contador[param])
-        if(strcmp(procurado->nickname,raiz->nickname)<0)
-           raiz->pont[param][ESQ]= atualiza_arvore_u(procurado,param,raiz->pont[param][ESQ]);
-        else
-           raiz->pont[param][DIR]= atualiza_arvore_u(procurado,param,raiz->pont[param][DIR]);
-
-     else
-
+void atualiza_arvore_u(usuario *filho,usuario *pai,usuario *vo,int param,usuario **P_U_AeL){
+   if(filho->contador[param]>pai->contador[param])
+   {
+	int i, j, k;
+	
+	if(vo!=NULL){
+	   if(vo->pont[param][DIR] == pai)
+	      i=DIR;
+	   else
+	      i=ESQ;
+	   
+	   if(pai->pont[param][DIR] == filho)
+	   {
+	      j=DIR;
+	      k=ESQ;
+	   }
+	   else
+	   {
+	      j=ESQ;
+	      k=DIR;
+	   }
+	   
+	vo->pont[param][i] = filho;
+	pai->pont[param][j] = filho->pont[param][k];
+	filho->pont[param][k] = pai;
+	}
+	   
+	else
+	{
+	   if(pai->pont[param][DIR] == filho)
+	   {
+	      j=DIR;
+	      k=ESQ;
+	   }
+	   else
+	   {
+	      j=ESQ;
+	      k=DIR;
+	   }
+	
+	   P_U_AeL[param][RAIZ] = filho;
+	   pai->pont[param][j] = filho->pont[param][k];
+	   filho->pont[param][k] = pai;
+	}
+	   
+   }	   
 }
 
 tweet insere_lista_t(tweet *novo,tweet *ini,tweet *fim){
