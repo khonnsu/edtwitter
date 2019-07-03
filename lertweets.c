@@ -3,26 +3,25 @@
 
 int main(int argc, char **argv){
 
-	FILE *ent = fopen(arg[1],"r");
-	if(ent==NULL){
+	FILE *entra = fopen(arg[1],"r");
+	if(entra==NULL){
 		printf("Erro ao abrir arquivo de entrada\n");		
 		return -1;
 	}
-	FILE *ops = fopen(arg[2],"r");
-	if(ops==NULL){
+	FILE *param = fopen(arg[2],"r");
+	if(param==NULL){
 		printf("Erro ao abrir arquivo de operacoes\n");
 		return -1;
 	}	
-	FILE *sai = fopen(arg[3],"w");
-	if(sai=NULL){
+	FILE *saida = fopen(arg[3],"w");
+	if(saida=NULL){
 		printf("Erro ao criar arquivo de saída\n");
 		return -1;
 	}
 		
-	int opa,opb,opc,opd,ope,opf;
-	char opg;
+	ops operacao;		
 
-	leparametros(ops,&opa,&opb,&opc,&opd,&ope,&opf,&opg);
+	leparametros(param,&operacao);
 
 			
 

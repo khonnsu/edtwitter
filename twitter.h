@@ -55,6 +55,16 @@ typedef struct{
 	struct l_hash *prox;
 }l_hash;
 
+typedef struct{
+	int a;
+	int b;
+	int c;
+	int d;
+	int e;
+	int f;
+	char g[279];
+}ops;
+
 //Funcoes 
 
 int learquivo(char *nome,usuario *raiz_post, usuario *ini_post, usuario *fim_post,usuario *raiz_menc, usuario *ini_menc, usuario *fim_menc, usuario *ini_rts, usuario *fim_rts,usuario *raiz_enga, usuario *ini_enga, usuario *fim_enga, hashtag *raiz_r, hashtag *ini_h, hashtag *fim_h, tweet *rank_ini, tweet *rank_fim);
