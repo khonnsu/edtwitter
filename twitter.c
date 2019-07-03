@@ -13,6 +13,7 @@ int learquivo(char *nome,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L){
     usuario *user;
     hashtag *hash;
     tweet *atual;
+    l_hash **mesmo_T;
 	  
     char nick[16];
     char simbolo;
@@ -26,6 +27,7 @@ int learquivo(char *nome,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L){
       fseek(arq, 1, SEEK_CUR);
       fscanf(arq ,"%[^;]s",nick);
       fseek(arq, 1, SEEK_CUR);
+      *mesmo_T=NULL;
       do{
       	fscanf(arq ,"%[^;@#]s",atual->texto);
       	fscanf(arq,"%c",simbolo);
@@ -38,22 +40,24 @@ int learquivo(char *nome,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L){
 			break;
 		case '#':
 			fscanf(arq,"%[^; ]s",hashtag);
-			//verifica se existe hashtag e insere em árvore de mais usadas
+			verifica_hashtag(hashtag ,mesmo_T, NULL, NULL, P_H_AeL);
 			strcat(atual->texto,"#");
 			strcat(atual->texto,hashtag);
 		case ';':
 			fimtexto=1;
 	}
-      }while(!fimtexto);	
+      }while(!fimtexto);
       fseek(arq, 1, SEEK_CUR);
       fscanf(arq ,"%d",&atual->retweets);
       fseek(arq, 1, SEEK_CUR);
       fscanf(arq ,"%d",&atual->curtidas);
       fseek(arq, 1, SEEK_CUR);
 	      
-      verifica_exist(nick, atual, POST, NULL, NULL, P_U_AeL, P_H_AeL, P_T_L)   
+      verifica_exist(nick, atual, POST, NULL, NULL, P_U_AeL, P_H_AeL, P_T_L);
+      relaciona(*mesmo_T);
+      destroi(mesmo_T);
        
-      insere_lista_t(atual, rank_ini,rank_fim);
+      insere_lista_t(atual, P_T_L);
     }
 
 }
@@ -62,7 +66,7 @@ int learquivo(char *nome,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L){
 
 
 
-usuario verifica_usuario(char *nick,tweet *lido,int param,usuario *raiz, usuario *pai, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
+usuario *verifica_usuario(char *nick,tweet *lido,int param,usuario *raiz, usuario *pai, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
 {
 if(pai==NULL)
   raiz= P_U_AeL[param][RAIZ];
@@ -108,19 +112,18 @@ if(pai==NULL)
         else if(i<0)
         {
 		usuario *temp = raiz->pont[param][ESQ];
-                raiz->pont[param][ESQ]= verifica_exist(nick, lido, param, raiz->pont[param][ESQ], raiz, P_U_AeL, P_H_AeL, tweet P_T_L);
+                raiz->pont[param][ESQ]= verifica_exist(nick, lido, param, raiz->pont[param][ESQ], raiz, P_U_AeL, P_H_AeL, P_T_L);
 		if(temp!=raiz->pont[param][ESQ])
-		    atualiza_arvore_u(raiz->pont[param][ESQ], raiz, pai, param, P_U_AeL);
+		    raiz = atualiza_arvore_u(raiz->pont[param][ESQ], raiz, pai, param, P_U_AeL);
 		return raiz;
         }
-
         else
         {
 		usuario *temp = raiz->pont[param][DIR];
 		
-                raiz->pont[param][DIR]= verifica_exist(nick,lido,param, raiz->pont[POST][DIR], raiz, P_U_AeL, P_H_AeL, tweet P_T_L);
+                raiz->pont[param][DIR]= verifica_exist(nick,lido,param, raiz->pont[POST][DIR], raiz, P_U_AeL, P_H_AeL, P_T_L);
 		if(temp!=raiz->pont[param][DIR])
-		    atualiza_arvore_u(raiz->pont[param][DIR], raiz, pai, param, P_U_AeL);
+		    raiz = atualiza_arvore_u(raiz->pont[param][DIR], raiz, pai, param, P_U_AeL);
                 return raiz;
         }
 	    
@@ -129,12 +132,12 @@ if(pai==NULL)
        switch(param)
 	{
 	       case POST:
-		return cria_user(nick, lido, 0, P_U_AeL, P_H_AeL, tweet P_T_L);
+		return cria_user(nick, lido, 0, P_U_AeL, P_H_AeL, P_T_L);
     		
 	       break;
 		       
 	       case MENC:
-		  return cria_user(nick, NULL, 1, P_U_AeL, P_H_AeL, tweet P_T_L);
+		  return cria_user(nick, NULL, 1, P_U_AeL, P_H_AeL, P_T_L);
 	       break;
        }
     }	
@@ -143,7 +146,7 @@ if(pai==NULL)
 
 	
 	
-usuario cria_user(char *nick, tweet *lido, int flag_menc, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
+usuario *cria_user(char *nick, tweet *lido, int flag_menc, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
 {	
 	usuario *novo;
         novo= malloc(sizeof(usuario));
@@ -184,24 +187,25 @@ usuario cria_user(char *nick, tweet *lido, int flag_menc, usuario **P_U_AeL, has
 
 
 
-usuario insere_lista_u(usuario *novo,int param,usuario **P_U_AeL){
+usuario *insere_lista_u(usuario *novo,int param,usuario **P_U_AeL){
 	if(P_U_AeL[param][FIM]!=NULL) // caso a lista não seja vazia
         {
             usuario *aux;
-            aux=fim;
+            aux=P_U_AeL[param][FIM];
 
-                while((aux->contador[param]) < (novo->contardor[param]) && aux!=NULL)	// encontra primeiro item da lista com numero >= de posts
+                while aux!=NULL)	// encontra primeiro item da lista com numero >= de posts
                 {
+	            if(aux->contador[param]) >= (novo->contador[param]))
+			    break;
                     aux=aux->pont[param][ANT];
                 }
 
-                while(strcmp(novo->nickname,aux->nickname)<0 && aux->contador[param] == novo->contador[param] && aux!=NULL) // acha ordem alfabetica dentro entre os itens com o mesmo numero de acessos (aux sera anterior a novo)
+                while(aux!=NULL) // acha ordem alfabetica dentro entre os itens com o mesmo numero de acessos (aux sera anterior a novo)
                 {
+		    if(strcmp(novo->nickname,aux->nickname)>= 0 && aux->contador[param] == novo->contador[param])
+			    break;
                     aux=aux->pont[param][ANT];
                 }
-		 
-		if(aux==NULL)
-		   P_U_AeL[param][INI]=novo;
 		
 		novo= insere_pre_aux(novo, aux, param);
                 
@@ -210,6 +214,8 @@ usuario insere_lista_u(usuario *novo,int param,usuario **P_U_AeL){
        	{
  	        novo->pont[param][ANT]=NULL;
                 novo->pont[param][PROX]=NULL;
+		P_U_AeL[param][INI]= novo;
+		P_U_AeL[param][FIM]= novo;
         }
 	
 	return novo;
@@ -218,54 +224,57 @@ usuario insere_lista_u(usuario *novo,int param,usuario **P_U_AeL){
 
 
 int atualiza_lista_u(usuario *user,int param,usuario **P_U_AeL){
-	if(user!=ini)
+	if(user!=P_U_AeL[param][INI])
 		if(user->contador[param] > user->pont[param][ANT]->contador[param])
 		{
-			usuario aux;
+			usuario *aux;
 			aux= user->pont[param][ANT];
 	
-			while(aux!=NULL && (aux->contador[param] < user->contador[param]))
+			while(aux!=NULL)
 			{
-				
+				if(aux->contador[param]) >= (user->contador[param]))
+			    		break;
 				aux= aux->pont[param][ANT];
 			}
 	
-			while(strcmp(novo->nickname,aux->nickname)<0 && aux->contador[param] == novo->contador[param] && aux!=NULL)
+			while(aux!=NULL)
 			{
+				if(strcmp(user->nickname,aux->nickname)>= 0 && aux->contador[param] == user->contador[param])
+			    		break;
 				aux= aux->pont[param][ANT];
 			}
-			
-			if(user==fim)
-			   fim= user->pont[param][ANT];
-			user= tira_lista(user, param);
-			user= insere_pre_aux(user, aux, param);
+			user= tira_lista(user, param, P_U_AeL);
+			user= insere_pre_aux(user, aux, param,  P_U_AeL);
 		
 	                 return 1;
 		}
                     return 0;
-
-	
 }
+	
+	
+	
 
-usuario tira_lista(usuario *user,int param, usuario **P_U_AeL)
+usuario *tira_lista(usuario *user,int param, usuario **P_U_AeL)
 {
 	if(user == P_U_AeL[param][FIM]){
 		user->pont[param][ANT]->pont[param][PROX] = NULL;
-		fim= user->pont[param][ANT];
+		P_U_AeL[param][FIM] = user->pont[param][ANT];
 		user->pont[param][ANT]= NULL;
 	}
 	else{
+		
 		user->pont[param][ANT]->pont[param][PROX]= user->pont[param][PROX];
 		user->pont[param][PROX]->pont[param][ANT]= user->pont[param][ANT];
-		
 		user->pont[param][ANT]=NULL;
 		user->pont[param][PROX]=NULL;	
 	}
 	return user;
 	
 }
+	
+	
 
-usuario insere_pre_aux(usuario *user, usuario *aux,int param, usuario **P_U_AeL){
+usuario *insere_pre_aux(usuario *user, usuario *aux,int param, usuario **P_U_AeL){
 	if(aux==NULL)
 	{
 		user->pont[param][PROX]=P_U_AeL[param][INI];
@@ -274,21 +283,32 @@ usuario insere_pre_aux(usuario *user, usuario *aux,int param, usuario **P_U_AeL)
 	}
 	else
 	{
-		usuario terceiro;
-		terceiro = aux->pont[param][PROX];
+		if(aux!=P_U_AeL[param][FIM])
+		{
+			usuario *terceiro;
+			terceiro = aux->pont[param][PROX];
+			
+			aux->pont[param][PROX]= user;
+			terceiro->pont[param][ANT]= user;
 		
-		aux->pont[param][PROX]= user;
-		terceiro->pont[param][ANT]= user;
-		
-		user->pont[param][ANT]= aux;
-		user->pont[param][PROX]= terceiro;
+			user->pont[param][ANT]= aux;
+			user->pont[param][PROX]= terceiro;
+		}
+		else
+		{
+			user->pont[param][ANT]=P_U_AeL[param][FIM];
+			P_U_AeL[param][FIM]->pont[param][PROX]= user;
+			P_U_AeL[param][FIM]= user;
+		}
 	}
 	
 	return user;
 }
+	
+	
 
 
-void atualiza_arvore_u(usuario *filho,usuario *pai,usuario *vo,int param,usuario **P_U_AeL){
+usuario *atualiza_arvore_u(usuario *filho,usuario *pai,usuario *vo,int param,usuario **P_U_AeL){
    if(filho->contador[param]>pai->contador[param])
    {
 	int i, j, k;
@@ -332,84 +352,13 @@ void atualiza_arvore_u(usuario *filho,usuario *pai,usuario *vo,int param,usuario
 	   pai->pont[param][j] = filho->pont[param][k];
 	   filho->pont[param][k] = pai;
 	}
-	   
-   }	   
+      return filho; 
+   }
+   return pai;
 }
 
-tweet insere_lista_t(tweet *novo,tweet *ini,tweet *fim){
-	if(fim!=NULL) // caso a lista não seja vazia
-        {
-            tweet *aux;
-            aux=fim;
-
-            if(aux==ini)
-            {
-                if(strcmp(novo->texto,aux->texto)<0)
-                {
-                    novo->rank[ANT]= NULL;
-                    novo->rank[PROX]= aux;
-                    aux->rank[ANT]= novo;
-                    ini=novo;
-                }
-                else
-                {
-                    novo->rank[ANT]=aux;
-                    novo->rank[PROX]=NULL;
-                    aux->rank[PROX]=novo;
-                    fim=novo;
-                }
-
-            }
-            else
-            {
-
-                while((aux->retweets) < (novo->retweets) && aux!=ini)	// encontra primeiro item da lista com numero >= de posts
-                {
-                    aux=aux->rank[ANT];
-                }
-
-                while(strcmp(novo->texto,aux->texto)<0 && aux->retweets == novo->retweets && aux!=ini) // acha ordem alfabetica dentro entre os itens com o mesmo numero de acessos (aux sera anterior a novo)
-                {
-                    aux=aux->rank[ANT];
-                }
-		    
-
-                if(aux == fim)	// caso tenha que inserir o novo no fim da lista
-                {
-                    novo->rank[ANT]=aux;
-                    novo->rank[PROX]=NULL;
-                    aux->rank[PROX]=novo;
-                    fim=novo;
-                }
-                else if(aux == ini &&  aux->retweets == novo->retweets && strcmp(novo->texto,aux->texto)<0) //// caso tenha que inserir o novo no inicio da lista
-                {
-                    novo->rank[ANT]= NULL;
-                    novo->rank[PROX]= aux;
-                    aux->rank[ANT]= novo;
-                    ini=novo;
-                }
-                else
-                {
-                    tweet terceiro;
-                    terceiro = aux->rank[PROX];
-
-
-                    aux->rank[PROX] = novo;
-                    terceiro->rank[ANT] = novo;
-
-                    novo->rank[ANT]= aux;
-                    novo->rank[PROX]= terceiro;
-                }
-            }
-            else
-            {
-                novo->rank[ANT]=NULL;
-                novo->rank[PROX]=NULL;
-            }
-        }
 	
-	return novo;
-}
+	
 
 
 
@@ -423,15 +372,13 @@ tweet insere_lista_t(tweet *novo,tweet *ini,tweet *fim){
 
 
 
-
-hashtag *verifica_hashtag(char *hash, l_hash *mesmo_T, hashtag *raiz, hashtag *pai, hashtag **P_H_AeL)
+hashtag *verifica_hashtag(char *hash, l_hash **mesmo_T, hashtag *raiz, hashtag *pai, hashtag **P_H_AeL)
 {
 if(pai==NULL)
   raiz= P_H_AeL[RAIZ];
 	
     if(raiz!=NULL)
     {
-
         int i =strcmp(hash,raiz->nome);
         if(i==0)
         {
@@ -439,7 +386,8 @@ if(pai==NULL)
 		
 	    atualiza_lista_h(raiz ,P_H_AeL)		//atualiza lista
 		    
-	   l_hash *novo, *aux;
+	   l_hash novo;
+	   l_hash *aux;
            novo->dado= raiz;
 	   novo->prox= NULL;
 	   aux= mesmoT;
@@ -453,69 +401,50 @@ if(pai==NULL)
 
         else if(i<0)
         {
-           
+                hashtag *temp = raiz->pont[ESQ];
+		
 		raiz->pont[ESQ] = verifica_hashtag(hash ,mesmo_T , raiz->pont[ESQ], raiz, P_H_AeL);
-		    atualiza_arvore_h(raiz->pont[ESQ], raiz, pai, P_U_AeL);
+		if(temp!=raiz->pont[ESQ])
+		    raiz = atualiza_arvore_h(raiz->pont[ESQ], raiz, pai, P_H_AeL);
 		return raiz;
 
         }
         else
         {
-                raiz->pont[DIR]= verifica_exist(hash,lido,param, raiz->pont[DIR], raiz, P_H_AeL);
-		    atualiza_arvore_u(raiz->pont[DIR], raiz, pai, P_U_AeL);
+		hashtag *temp = raiz->pont[DIR];
+                raiz->pont[DIR]= verifica_hashtag(hash,mesmo_T, raiz->pont[DIR], raiz, P_H_AeL);
+		if(temp!=raiz->pont[DIR])
+		    raiz = atualiza_arvore_h(raiz->pont[DIR], raiz, pai, P_H_AeL);
                 return raiz;
         }
     else // não encontrou na arvore e achou ponto para incerção
     {
-       switch(param)
-	{
-	       case POST:
-		return cria_user(nick, lido, 0, P_U_AeL, P_H_AeL, tweet P_T_L);
-	       break;
-		       
-	       case MENC:
-		  return cria_user(nick, NULL, 1, P_U_AeL, P_H_AeL, tweet P_T_L);
-	       break;
-       }
+	raiz= cria_hash(hash, P_H_AeL);
+	l_hash novo;
+	l_hash *aux;
+        novo->dado= raiz;
+        novo->prox= NULL;
+	aux= mesmoT;
+	while(aux->prox!=NULL)
+	   aux=aux->prox;
+	aux->prox=novo;
+	    
+	return raiz;
     }	
 }	
 
 
 	
 	
-usuario cria_user(char *nick, tweet *lido, int flag_menc, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
+hashtag *cria_hash(char *hash,hashtag **P_H_AeL)
 {	
-	usuario *novo;
-        novo= malloc(sizeof(usuario));
-        strcpy(novo.nickname,nick);
+	hashtag *novo;
+        novo= malloc(sizeof(hashtag));
+        strcpy(novo.nome,nick);
 		
-	int i, j;
-	for(i=0;i<4;i++)
-	{
-	    novo->contador[i]=0;
-	    for(j=0;j<4;j++)
-		    novo->pont[i][j]=NULL;
-	}
-	
-	if(flag_menc)
-	    novo->contador[ENGA]= 1;
-	   
-	
-	if(lido!=NULL){
-	lido->prox_rank=NULL;
-	lido->prox_user=NULL;
-        novo->curtidas= lido->curtidas;
-        novo->tweets= lido;
-	novo->contador[POST]=1;
-	novo->contador[RTS]=lido->retweets;
-	novo->contador[ENGA]= novo->curtidas +novo->contador[ENGA] +novo->contador[RTS];
-	}
-	
-	
-		insere_lista_u(novo, POST,P_U_AeL);
-		insere_lista_u(novo, MENC,P_U_AeL);
-		insere_lista_u(novo, RTS,P_U_AeL);
-		insere_lista_u(novo, ENGA,P_U_AeL);
+        novo->usos= 1;
+
+        novo = insere_lista_h(novo,P_H_AeL);
 
         return novo;
 }
@@ -524,32 +453,35 @@ usuario cria_user(char *nick, tweet *lido, int flag_menc, usuario **P_U_AeL, has
 
 
 
-usuario insere_lista_u(usuario *novo,int param,usuario **P_U_AeL){
-	if(P_U_AeL[param][FIM]!=NULL) // caso a lista não seja vazia
+hashtag *insere_lista_h(hashtag *novo,hashtag **P_H_AeL){
+	if(P_H_AeL[FIM]!=NULL) // caso a lista não seja vazia
         {
-            usuario *aux;
-            aux=fim;
+            hashtag *aux;
+            aux=P_U_AeL[FIM];
 
-                while((aux->contador[param]) < (novo->contardor[param]) && aux!=NULL)	// encontra primeiro item da lista com numero >= de posts
+                while(aux!=NULL)	// encontra primeiro item da lista com numero >= de posts
                 {
-                    aux=aux->pont[param][ANT];
+		    if((aux->usos) >= (novo->usos))
+			    break;
+                    aux=aux->pont[ANT];
                 }
 
-                while(strcmp(novo->nickname,aux->nickname)<0 && aux->contador[param] == novo->contador[param] && aux!=NULL) // acha ordem alfabetica dentro entre os itens com o mesmo numero de acessos (aux sera anterior a novo)
+                while(aux!=NULL) // acha ordem alfabetica dentro entre os itens com o mesmo numero de acessos (aux sera anterior a novo)
                 {
-                    aux=aux->pont[param][ANT];
+		    if(strcmp(novo->nome,aux->nome)>= 0 && aux->usos == novo->usos)
+			    break;
+                    aux=aux->pont[ANT];
                 }
-		 
-		if(aux==NULL)
-		   P_U_AeL[param][INI]=novo;
 		
-		novo= insere_pre_aux(novo, aux, param);
+		novo= insere_pre_aux_h(novo, aux, P_H_AeL);
                 
         }
 	else
        	{
- 	        novo->pont[param][ANT]=NULL;
-                novo->pont[param][PROX]=NULL;
+ 	        novo->pont[ANT]=NULL;
+                novo->pont[PROX]=NULL;
+		P_U_AeL[INI]= novo;
+		P_U_AeL[FIM]= novo;
         }
 	
 	return novo;
@@ -557,89 +489,97 @@ usuario insere_lista_u(usuario *novo,int param,usuario **P_U_AeL){
 }
 
 
-int atualiza_lista_u(usuario *user,int param,usuario **P_U_AeL){
-	if(user!=ini)
-		if(user->contador[param] > user->pont[param][ANT]->contador[param])
+int atualiza_lista_h(hashtag *hash ,hashtag **P_H_AeL){
+	if(hash!=P_H_AeL[INI])
+		if(hash->usos > hash->pont[ANT]->usos)
 		{
-			usuario aux;
-			aux= user->pont[param][ANT];
+			hashtag *aux;
+			aux= hash->pont[ANT];
 	
-			while(aux!=NULL && (aux->contador[param] < user->contador[param]))
+			while(aux!=NULL)
 			{
-				
-				aux= aux->pont[param][ANT];
+				if(aux->usos) >= (hash->usos))
+			    		break;
+				aux= aux->pont[ANT];
 			}
 	
-			while(strcmp(novo->nickname,aux->nickname)<0 && aux->contador[param] == novo->contador[param] && aux!=NULL)
+			while(aux!=NULL)
 			{
-				aux= aux->pont[param][ANT];
+				if(strcmp(hash->nome,aux->nome)>= 0 && aux->usos == hash->usos)
+			    		break;
+				aux= aux->pont[ANT];
 			}
 			
-			if(user==fim)
-			   fim= user->pont[param][ANT];
-			user= tira_lista(user, param);
-			user= insere_pre_aux(user, aux, param);
+			hash= tira_lista_h(hash, P_H_AeL);
+			hash= insere_pre_aux_h(hash, aux, P_H_AeL);
 		
 	                 return 1;
 		}
                     return 0;
-
-	
 }
 
-usuario tira_lista(usuario *user,int param, usuario **P_U_AeL)
+hashtag *tira_lista_h(hashtag *hash, hashtag **P_H_AeL)
 {
-	if(user == P_U_AeL[param][FIM]){
-		user->pont[param][ANT]->pont[param][PROX] = NULL;
-		fim= user->pont[param][ANT];
-		user->pont[param][ANT]= NULL;
+	if(hash == P_H_AeL[FIM]){
+		hash->pont[ANT]->pont[PROX] = NULL;
+		P_H_AeL[FIM] = hash->pont[ANT];
+		hash->pont[ANT]= NULL;
 	}
 	else{
-		user->pont[param][ANT]->pont[param][PROX]= user->pont[param][PROX];
-		user->pont[param][PROX]->pont[param][ANT]= user->pont[param][ANT];
+		hash->pont[ANT]->pont[PROX]= hash->pont[PROX];
+		hash->pont[PROX]->pont[ANT]= hash->pont[ANT];
 		
-		user->pont[param][ANT]=NULL;
-		user->pont[param][PROX]=NULL;	
+		hash->pont[ANT]=NULL;
+		hash->pont[PROX]=NULL;	
 	}
-	return user;
+	return hash;
 	
 }
 
-usuario insere_pre_aux(usuario *user, usuario *aux,int param, usuario **P_U_AeL){
+hashtag *insere_pre_aux_h(hashtag *hash, hashtag *aux,hashtag **P_H_AeL){
 	if(aux==NULL)
 	{
-		user->pont[param][PROX]=P_U_AeL[param][INI];
-		P_U_AeL[param][INI]->pont[param][ANT]= user;
-		P_U_AeL[param][INI]= user;
+		hash->pont[PROX]=P_H_AeL[INI];
+		P_H_AeL[INI]->pont[ANT]= hash;
+		P_H_AeL[INI]= hash;
 	}
 	else
 	{
-		usuario terceiro;
-		terceiro = aux->pont[param][PROX];
+	   if(aux!=P_H_AeL[FIM])
+	   {
+		hashtag *terceiro;
+		terceiro = aux->pont[PROX];
 		
-		aux->pont[param][PROX]= user;
-		terceiro->pont[param][ANT]= user;
+		aux->pont[PROX]= hash;
+		terceiro->pont[ANT]= hash;
 		
-		user->pont[param][ANT]= aux;
-		user->pont[param][PROX]= terceiro;
-	}
+		hash->pont[ANT]= aux;
+		hash->pont[PROX]= terceiro;
+	   }
+	   else
+           {
+		hash->pont[ANT]=P_H_AeL[FIM];
+		P_H_AeL[FIM]->pont[PROX]= hash;
+		P_H_AeL[FIM]= hash;
+	   }
+	 }
 	
-	return user;
+	return hash;
 }
 
 
-void atualiza_arvore_u(usuario *filho,usuario *pai,usuario *vo,int param,usuario **P_U_AeL){
-   if(filho->contador[param]>pai->contador[param])
+hashtag *atualiza_arvore_h(hashtag *filho,hashtag *pai,hashtag *vo, hashtag **P_H_AeL){
+if(filho->usos > pai->usos)
    {
 	int i, j, k;
 	
 	if(vo!=NULL){
-	   if(vo->pont[param][DIR] == pai)
+	   if(vo->pont[DIR] == pai)
 	      i=DIR;
 	   else
 	      i=ESQ;
 	   
-	   if(pai->pont[param][DIR] == filho)
+	   if(pai->pont[DIR] == filho)
 	   {
 	      j=DIR;
 	      k=ESQ;
@@ -650,14 +590,13 @@ void atualiza_arvore_u(usuario *filho,usuario *pai,usuario *vo,int param,usuario
 	      k=DIR;
 	   }
 	   
-	vo->pont[param][i] = filho;
-	pai->pont[param][j] = filho->pont[param][k];
-	filho->pont[param][k] = pai;
-	}
-	   
+	   vo->pont[i] = filho;
+	   pai->pont[j] = filho->pont[k];
+	   filho->pont[k] = pai;
+	}  
 	else
 	{
-	   if(pai->pont[param][DIR] == filho)
+	   if(pai->pont[DIR] == filho)
 	   {
 	      j=DIR;
 	      k=ESQ;
@@ -668,10 +607,339 @@ void atualiza_arvore_u(usuario *filho,usuario *pai,usuario *vo,int param,usuario
 	      k=DIR;
 	   }
 	
-	   P_U_AeL[param][RAIZ] = filho;
-	   pai->pont[param][j] = filho->pont[param][k];
-	   filho->pont[param][k] = pai;
+	   P_U_AeL[RAIZ] = filho;
+	   pai->pont[j] = filho->pont[k];
+	   filho->pont[k] = pai;
 	}
-	   
-   }	   
+      return filho;
+   }
+return pai;
 }
+	
+	
+tweet *insere_lista_t(tweet *novo, tweet *P_T_L){
+	if(P_T_L[FIM]!=NULL) // caso a lista não seja vazia
+        {
+            tweet *aux;
+            aux=P_T_L[FIM];
+	   	while(aux!=NULL)
+                {
+		    if((aux->retweets) >= (novo->retweets))
+			    break;
+                    aux=aux->pont[ANT];
+                }
+		while(aux!=NULL) // acha ordem alfabetica dentro entre os itens com o mesmo numero de acessos (aux sera anterior a novo)
+                {
+		    if(strcmp(novo->texto,aux->texto)>= 0 && aux->retweets == novo->retweets)
+			    break;
+                    aux=aux->pont[ANT];
+                }
+		
+	    novo= insere_pre_aux_t(novo, aux,P_T_L);
+	}
+        else
+       	{
+ 	        novo->pont[ANT]=NULL;
+                novo->pont[PROX]=NULL;
+		P_T_L[INI]= novo;
+		P_T_L[FIM]= novo;
+        }
+	
+	return novo;
+
+}
+	
+tweet *insere_pre_aux_t(tweet *t, tweet *aux, tweet **P_T_L){
+	if(aux==NULL)
+	{
+		t->pont[PROX]=P_T_L[INI];
+		P_T_L[INI]->pont[ANT]= t;
+		P_T_L[INI]= t;
+	}
+	else
+	{
+	   if(aux!=P_T_L[FIM])
+	   {
+		tweet *terceiro;
+		terceiro = aux->pont[PROX];
+		
+		aux->pont[PROX]= t;
+		terceiro->pont[ANT]= t;
+		
+		t->pont[ANT]= aux;
+		t->pont[PROX]= terceiro;
+	   }
+	   else
+           {
+		t->pont[ANT]=P_T_L[FIM];
+		P_T_L[FIM]->pont[PROX]= t;
+		P_T_L[FIM]= t;
+	   }
+	 }
+	
+	return t;
+}
+	
+void relaciona(l_hash *mesmo_T)
+{
+	if(mesmo_T!=NULL)
+	{
+		hashtag *aux1, *aux2;
+		l_hash *cursor;
+		while(mesmo_T!=NULL)
+		{
+		    aux1 = mesmo_T->dado;
+		    cursor = mesmo_T->prox;
+		    while(cursor!=NULL)
+		    {
+			aux2=cursor->dado;
+			ad_rel(aux1, aux2);
+			ad_rel(aux2, aux1);
+			cursor=cursor->prox;
+		    }
+		    mesmo_T= mesmo_T->prox;
+		}
+			
+	}
+	
+}
+
+void ad_rel(hashtag *aux1 , hashtag *aux2)
+{
+    if(aux1->associadas[RAIZ]==NULL)
+    {
+	relacionadas *novo;
+	novo= malloc(sizeof(relacionadas));
+	novo->dado=aux2;
+	int i;
+	for(i=0; i<4; i++)
+	    novo->pont[i]=NULL;
+    }
+    else
+    {
+	    acha_rel(aux2, aux1->associadas, aux1->associadas[RAIZ], NULL);
+    }
+	
+}
+	
+relacionadas *acha_rel(hashtag *procurada,  relacionadas **ponts,  relacionadas *raiz, relacionadas *pai)
+{
+if(raiz!=NULL)
+    {
+        int i =strcmp(procurada->nome,raiz->dado->nome);
+        if(i==0)
+        {
+	    raiz->encontros++; // incrementa contador de usos da hashtag
+		
+	    atualiza_lista_r(raiz ,ponts)		//atualiza lista 
+	
+           return raiz;
+        }
+
+        else if(i<0)
+        {
+                relacionadas *temp = raiz->pont[ESQ];
+		
+		raiz->pont[ESQ] = acha_rel(procurada, *ponts, raiz->pont[ESQ], raiz);
+		if(temp!=raiz->pont[ESQ])
+		    raiz = atualiza_arvore_r(raiz->pont[ESQ], raiz, pai, ponts);
+		return raiz;
+
+        }
+        else
+        {
+		hashtag *temp = raiz->pont[DIR];
+                raiz->pont[DIR]= acha_rel(procurada,*ponts , raiz->pont[DIR], raiz);
+		if(temp!=raiz->pont[DIR])
+		    raiz = atualiza_arvore_r(raiz->pont[DIR], raiz, pai, ponts);
+                return raiz;
+        }
+    else // não encontrou na arvore e achou ponto para incerção
+    {
+	raiz= cria_r(aux2, ponts);    
+	return raiz;
+	    
+    }	
+}
+}
+	
+	
+relacionadas *cria_r(hashtag *nova,relacionadas **P_R)
+{	
+	relacionadas *novo;
+        novo= malloc(sizeof(relacionadas));
+        strcpy(novo->dado->nome,nova->nome);
+		
+        novo->encontros= 1;
+
+        novo = insere_lista_r(novo,P_R);
+
+        return novo;
+}
+	
+	
+relacionadas *insere_lista_r(relacionadas *novo, relacionadas **P_R)
+{	
+	if(P_R[FIM]!=NULL) // caso a lista não seja vazia
+        {
+            relacionadas *aux;
+            aux=P_R[FIM];
+
+                while(aux!=NULL)	// encontra primeiro item da lista com numero >= de posts
+                {
+		    if((aux->encontros) >= (novo->encontros))
+			    break;
+                    aux=aux->pont[ANT];
+                }
+
+                while(aux!=NULL) // acha ordem alfabetica dentro entre os itens com o mesmo numero de acessos (aux sera anterior a novo)
+                {
+		    if(strcmp(novo->dado->nome,aux->dado->nome)>= 0 && aux->encontros == novo->encontros)
+			    break;
+                    aux=aux->pont[ANT];
+                }
+		
+		novo= insere_pre_aux_r(novo, aux, P_R);
+                
+        }
+	else
+       	{
+ 	        novo->pont[ANT]=NULL;
+                novo->pont[PROX]=NULL;
+		P_L[INI]= novo;
+		P_L[FIM]= novo;
+        }
+	
+	return novo;
+
+}
+}
+	
+relacionadas *insere_pre_aux_r(relacionadas *novo, relaciondas *aux,relaciondas **P_L)
+{
+	if(aux==NULL)
+	{
+		novo->pont[PROX]=P_L[INI];
+		P_L[INI]->pont[ANT]= novo;
+		P_L[INI]= novo;
+	}
+	else
+	{
+	   if(aux!=P_L[FIM])
+	   {
+		relaciondas *terceiro;
+		terceiro = aux->pont[PROX];
+		
+		aux->pont[PROX]= novo;
+		terceiro->pont[ANT]= novo;
+		
+		novo->pont[ANT]= aux;
+		novo->pont[PROX]= terceiro;
+	   }
+	   else
+           {
+		novo->pont[ANT]=P_L[FIM];
+		P_L[FIM]->pont[PROX]= novo;
+		P_L[FIM]= novo;
+	   }
+	 }
+	
+	return novo;
+}
+	
+	
+int atualiza_lista_r(relaciondas *novo ,hashtag **P_L){
+	if(novo!=P_L[INI])
+		if(novos->encontros > novo->pont[ANT]->encontros)
+		{
+			relacionadas *aux;
+			aux= novo->pont[ANT];
+	
+			while(aux!=NULL)
+			{
+				if(aux->encontros) >= (novo->encontros))
+			    		break;
+				aux= aux->pont[ANT];
+			}
+	
+			while(aux!=NULL)
+			{
+				if(strcmp(novo->nome,aux->nome)>= 0 && aux->encontros == user->encontros)
+			    		break;
+				aux= aux->pont[ANT];
+			}
+			
+			novo= tira_lista_r(hash, P_H_AeL);
+			novo= insere_pre_aux_r(hash, aux, P_H_AeL);
+		
+	                 return 1;
+		}
+                    return 0;
+}
+	
+	
+relacionadas *tira_lista_h(relacionadas *novo, relacionadas **P_L)
+{
+	if(novo == P_L[FIM]){
+		novo->pont[ANT]->pont[PROX] = NULL;
+		P_L[FIM] = novo->pont[ANT];
+		novo->pont[ANT]= NULL;
+	}
+	else{
+		novo->pont[ANT]->pont[PROX]= novo->pont[PROX];
+		novo->pont[PROX]->pont[ANT]= novo->pont[ANT];
+		
+		novo->pont[ANT]=NULL;
+		novo->pont[PROX]=NULL;	
+	}
+	return novo;
+	
+}
+
+relaciondas *atualiza_arvore_r(relacionadas *filho,relacionadas *pai,relacionadas *vo, relacionadas **P_L){
+if(filho->encontros > pai->encontros)
+   {
+	int i, j, k;
+	
+	if(vo!=NULL){
+	   if(vo->pont[DIR] == pai)
+	      i=DIR;
+	   else
+	      i=ESQ;
+	   
+	   if(pai->pont[DIR] == filho)
+	   {
+	      j=DIR;
+	      k=ESQ;
+	   }
+	   else
+	   {
+	      j=ESQ;
+	      k=DIR;
+	   }
+	   
+	   vo->pont[i] = filho;
+	   pai->pont[j] = filho->pont[k];
+	   filho->pont[k] = pai;
+	}  
+	else
+	{
+	   if(pai->pont[DIR] == filho)
+	   {
+	      j=DIR;
+	      k=ESQ;
+	   }
+	   else
+	   {
+	      j=ESQ;
+	      k=DIR;
+	   }
+	
+	   P_L[RAIZ] = filho;
+	   pai->pont[j] = filho->pont[k];
+	   filho->pont[k] = pai;
+	}
+      return filho;
+   }
+return pai;
+}	
