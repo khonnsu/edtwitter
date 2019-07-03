@@ -27,8 +27,8 @@ typedef struct{
 	char texto[141];
 	int curtidas;
 	int retweets;
-	struct lista_tweet *rank[4]; //[0=prox,3=ant]
-	struct lista_tweet *prox_user;
+	struct tweet *pont[4]; //[0=prox,3=ant]
+	struct tweet *prox_user;
 	l_hash *eh_as_hash;
 	
 }tweet;
