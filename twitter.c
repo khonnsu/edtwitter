@@ -17,7 +17,7 @@ int learquivo(char *nome,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L){
     char nick[16];
     char simbolo;
     int fimtexto = 0;
-    char mencionado[16];
+    char n_mencionado[16];
     char hashtag[140];
     
     while(!feof(arq)){
@@ -31,8 +31,8 @@ int learquivo(char *nome,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L){
       	fscanf(arq,"%c",simbolo);
       	switch(simbolo){
 		case '@':
-	   		fscanf(arq,"%[^; ]s",mencionado);
-	   		//verifica se existe usuario e insere em árvore de mais mencionados
+	   		fscanf(arq,"%[^; ]s",n_mencionado);
+			verifica_usuario(n_mencionado,NULL,MENC,NULL,NULL,P_U_AeL,P_H_AeL,P_T_L);
 	   		strcat(atual->texto,"@");
 	  		strcat(atual->texto,auxnick);
 			break;
