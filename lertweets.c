@@ -1,8 +1,9 @@
-#include <stdio.h>
 #include "twitter.h"
 
 int main(int argc, char **argv){
 
+	clock_t comeco = clock();
+	
 	FILE *entra = fopen(arg[1],"r");
 	if(entra==NULL){
 		printf("Erro ao abrir arquivo de entrada\n");		
@@ -22,6 +23,14 @@ int main(int argc, char **argv){
 	ops operacao;		
 
 	leparametros(param,&operacao);
+
+	//função que cria P_U_AeL, P_H,AeL, P_T_L
+	learquivo(entra,P_U_AeL,P_H_AeL,P_T_L);
+
+	
+		
+	return 0;
+} 
 
 			
 

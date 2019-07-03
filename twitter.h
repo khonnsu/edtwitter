@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+
 #DEFINE POST 0
 #DEFINE MENC 1
 #DEFINE RTS 2
