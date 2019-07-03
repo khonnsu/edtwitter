@@ -29,6 +29,8 @@ typedef struct{
 	int retweets;
 	struct lista_tweet *rank[4]; //[0=prox,3=ant]
 	struct lista_tweet *prox_user;
+	l_hash *eh_as_hash;
+	
 }tweet;
 
 //Estruturas para hashtags
@@ -36,17 +38,22 @@ typedef struct{
 typedef struct{
 	char nome[140];
 	int usos;
-	struct relacionadas *associadas;
+	relacionadas *associadas;
 	
-	struct hashtag *pont[3];	//[0=prox(ordem de mais usados), 1=dir(menor alfabeticamente), 2=esq(maior alfabeticamente)]
+	struct hashtag *pont[4];	//[0=prox, 1=dir, 2=esq, 3= ant]
 }hashtag;
 	
 typedef struct{
 	struct hashtag *dado;
 	int encontros;
-	struct relacionadas *pont[3];	//[0=prox(ordem de mais usados), 1=dir(menor alfabeticamente), 2=esq(maior alfabeticamente)]
+	struct relacionadas *pont[4];	//[0=prox, 1=dir, 2=esq, 3= ant]
 	
 }relacionadas;
+
+typedef struct{
+	struct hashtag *dado;
+	struct relacionadas *prox;
+}l_hash;
 
 //Funcoes 
 
