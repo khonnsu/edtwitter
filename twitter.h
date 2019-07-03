@@ -52,7 +52,7 @@ typedef struct{
 
 typedef struct{
 	struct hashtag *dado;
-	struct relacionadas *prox;
+	struct l_hash *prox;
 }l_hash;
 
 //Funcoes 
