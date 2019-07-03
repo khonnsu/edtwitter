@@ -3,13 +3,9 @@ usuario **P_U_AeL[4][3] = [0=post, 1=menc, 2=rts, 3=enga]	[0=ini, 1=fim, 2=raiz]
 hashtag **P_H_AeL[3] = [0=ini, 1=fim, 2=raiz]
 tweet **P_H_L[2] =  [0=ini, 1=fim]
 */
-int learquivo(char *nome,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L){
-  FILE *arq;
+#include "twitter.h"
+int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L){
   
-  arq=fopen(nome,"r");
-  if(arq==null)
-    return -1;
-  else{
     usuario *user;
     hashtag *hash;
     tweet *atual;
@@ -56,7 +52,6 @@ int learquivo(char *nome,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L){
       insere_lista_t(atual, rank_ini,rank_fim);
     }
 
-}
 }
 
 
@@ -676,7 +671,7 @@ void atualiza_arvore_u(usuario *filho,usuario *pai,usuario *vo,int param,usuario
    }	   
 }
 
-void leparametros(FILE *arquivo, ops *op){
+void leparametros(FILE *arquivo, ops *op){	//recebe ponteiro para estrutura com operacoes
 	fscanf(arquivo,"%*2c%d",op->a);
 	fscanf(arquivo,"%*3c%d",op->b);
 	fscanf(arquivo,"%*3c%d",op->c);
@@ -687,3 +682,51 @@ void leparametros(FILE *arquivo, ops *op){
 
 	fclose(arquivo);
 }
+
+void escrevearquivo(FILE *arq, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L, ops op, clock_t comeco){
+	clock_t fim;
+	float tempo;
+	int cont;
+	
+	fprintf(arq,"--- OP A\n");
+	cont=0;
+	hashtag *aux_hash = P_H_AeL[0];	
+	if(op.a == 0){			
+		while(aux_hash!=NULL){
+			fprintf(arq,"#%s, %d\n", aux_hash->nome, aux_hash->usos);
+			aux_hash=aux_hash->pont[PROX];
+		}
+	}
+	else{
+		while(cont<op.a&&aux_hash!=NULL){
+		fprintf(arq,"#%s, %d\n", aux_hash->nome, aux_hash->usos);
+		aux_hash=aux_hash->pont[PROX];
+		cont++;
+		}
+	}
+	fprintf(arq,"--- OP B\n");
+	cont=0;
+	usuario *aux_user = P_U_AeL[0][0];
+	if(op.b == 0){
+		while(aux_user!=NULL){
+			fprintf(arq,"@%s, %d\n", aux_user->nickname, aux_user->contador[POST]);
+			aux_user=aux_userPROX];
+		}
+	}
+	else{
+		while(cont<op.b&&aux_user!=NULL){
+			fprintf(arq,"@%s, %d\n", aux_user->nickname, aux_user->contador[POST]);
+			aux_user=aux_user[POST][PROX];
+			cont++;
+		}
+	}
+	fprintf(arq,"--- OP C\n");
+	cont = 0;
+	tweet *aux_tweet = P_T_L[0];
+	if(op.c == 0){
+		while(aux_tweet!=NULL){
+			fprintf(arq,"%s, %d\n", aux_tweet->texto, aux_tweet->curtidas);
+			aux_tweet=aux_tweet
+	fim = clock(); 
+	tempo =(float)(fim-comeco)/CLOCKS_PER_SEC; 
+		
