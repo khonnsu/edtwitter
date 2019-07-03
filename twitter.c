@@ -107,15 +107,19 @@ if(pai==NULL)
 
         else if(i<0)
         {
+		usuario *temp = raiz->pont[param][ESQ];
                 raiz->pont[param][ESQ]= verifica_exist(nick, lido, param, raiz->pont[param][ESQ], raiz, P_U_AeL, P_H_AeL, tweet P_T_L);
+		if(temp!=raiz->pont[param][ESQ])
 		    atualiza_arvore_u(raiz->pont[param][ESQ], raiz, pai, param, P_U_AeL);
 		return raiz;
         }
 
         else
         {
-
+		usuario *temp = raiz->pont[param][DIR];
+		
                 raiz->pont[param][DIR]= verifica_exist(nick,lido,param, raiz->pont[POST][DIR], raiz, P_U_AeL, P_H_AeL, tweet P_T_L);
+		if(temp!=raiz->pont[param][DIR])
 		    atualiza_arvore_u(raiz->pont[param][DIR], raiz, pai, param, P_U_AeL);
                 return raiz;
         }
@@ -449,30 +453,18 @@ if(pai==NULL)
 
         else if(i<0)
         {
-            if(raiz->pont[ESQ]==NULL)
-            {
+           
 		raiz->pont[ESQ] = verifica_hashtag(hash ,mesmo_T , raiz->pont[ESQ], raiz, P_H_AeL);
 		    atualiza_arvore_h(raiz->pont[ESQ], raiz, pai, P_U_AeL);
 		return raiz;
-            }
-            else
-                return verifica_hashtag(hash ,mesmo_T , raiz->pont[ESQ], raiz, P_H_AeL);
 
         }
-
         else
         {
-            if(raiz->pont[DIR]==NULL)
-            {
-                raiz->pont[DIR]= verifica_exist(hash,lido,param, raiz->pont[POST][DIR], raiz, P_U_AeL, P_H_AeL, tweet P_T_L);
-		    atualiza_arvore_u(raiz->pont[param][DIR], raiz, pai, param, P_U_AeL);
-                return raiz->pont[param][DIR];
-            }
-            else
-                return verifica_exist(nick,lido,param, raiz->pont[param][DIR],raiz, P_U_AeL, P_H_AeL, tweet P_T_L );
-            }
-
-    }
+                raiz->pont[DIR]= verifica_exist(hash,lido,param, raiz->pont[DIR], raiz, P_H_AeL);
+		    atualiza_arvore_u(raiz->pont[DIR], raiz, pai, P_U_AeL);
+                return raiz;
+        }
     else // não encontrou na arvore e achou ponto para incerção
     {
        switch(param)
