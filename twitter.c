@@ -947,7 +947,8 @@ void leparametros(FILE *arquivo, ops *op){	//recebe ponteiro para estrutura com 
 	fscanf(arquivo,"%*3c%d",op->d);
 	fscanf(arquivo,"%*3c%d",op->e);
 	fscanf(arquivo,"%*3c%d",op->f);
-	fscanf(arquivo,"%*3c%*[ #]%s",op->g);
+	fscanf(arquivo,"%*3c%*[ #]%[;]s",op->hash);
+	fscanf(arquivo,"%*c%d",op->g);
 
 	fclose(arquivo);
 }
@@ -959,7 +960,7 @@ void escrevearquivo(FILE *arq, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T
 	
 	fprintf(arq,"--- OP A\n");
 	cont=0;
-	hashtag *aux_hash = P_H_AeL[0];	
+	hashtag *aux_hash = P_H_AeL[INI];	
 	if(op.a == 0){			
 		while(aux_hash!=NULL){
 			fprintf(arq,"#%s, %d\n", aux_hash->nome, aux_hash->usos);
@@ -975,11 +976,11 @@ void escrevearquivo(FILE *arq, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T
 	}
 	fprintf(arq,"--- OP B\n");
 	cont=0;
-	usuario *aux_user = P_U_AeL[0][0];
+	usuario *aux_user = P_U_AeL[POST][INI];
 	if(op.b == 0){
 		while(aux_user!=NULL){
 			fprintf(arq,"@%s, %d\n", aux_user->nickname, aux_user->contador[POST]);
-			aux_user=aux_userPROX];
+			aux_user=aux_user->pont[POST][PROX];
 		}
 	}
 	else{
@@ -991,12 +992,106 @@ void escrevearquivo(FILE *arq, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T
 	}
 	fprintf(arq,"--- OP C\n");
 	cont = 0;
-	tweet *aux_tweet = P_T_L[0];
+	tweet *aux_tweet = P_T_L[INI];
 	if(op.c == 0){
 		while(aux_tweet!=NULL){
 			fprintf(arq,"%s, %d\n", aux_tweet->texto, aux_tweet->curtidas);
-			aux_tweet=aux_tweet
+			aux_tweet=aux_tweet->pont[0];
+		}
+	}
+	else{
+		while(cont<op.c&&aux_tweet!=NULL){
+			fprintf(arq,"%s, %d\n", aux_tweet->texto, aux_tweet->curtidas);
+			aux_tweet=aux_tweet->pont[0];
+			cont++;
+		}
+	}
+	fprintf(arq,"--- OP D\n");
+	cont = 0;
+	aux_user = P_U_AeL[MENC][INI];
+	if(op.d == 0){
+		while(aux_user!=NULL){
+			fprintf(arq,"@%s, %d\n", aux_user->nickname, aux_user->contador[MENC]);
+			aux_user=aux_user->pont[MENC][PROX];
+		}
+	}
+	else{
+		while(cont<op.d&&aux_user!=NULL){
+			fprintf(arq,"@%s, %d\n", aux_user->nickname, aux_user->contador[MENC]);
+			aux_user=aux_user->pont[MENC][PROX];
+			cont++;
+		}
+	}
+	fprintf(arq,"--- OP E\n");
+	cont = 0;
+	aux_user = P_U_AeL[RTS][INI];
+	if(op.e == 0){
+		while(aux_user!=NULL){
+			fprintf(arq,"@%s, %d\n", aux_user->nickname, aux_user->contador[RTS]);
+			aux_user=aux_user->pont[RTS][PROX];
+		}
+	}
+	else{
+		while(cont<op.e&&aux_user!=NULL){
+			fprintf(arq,"@%s, %d\n", aux_user->nickname, aux_user->contador[RTS];
+			aux_user=aux_user->pont[RTS][PROX];
+			cont++
+		}
+	}
+	fprinf(arq,"--- OP F\n");
+	cont=0;
+	aux_user = P_U_AeL[MENC][INI];
+	if(op.f == 0){
+		while(aux_user!=NULL){
+			fprintf(arq,"@%s, %d\n", aux_user->nickname, aux_user->contador[MENC];
+			aux_user=aux_user->pont[MENC][PROX];
+		}
+	}
+	else{
+		while(cont<op.f&&aux_user!=NULL){
+			fprintf(arq,"@%s, %d\n", aux_user->nickname, aux_user->contador[MENC];
+			aux_user=aux_user->pont[MENC][PROX];
+			cont++;
+		}
+	}
+	fprinf(arq,"--- OP G\n");
+	cont=0;
+	relacionadas *aux_rel = cadehashtag(op.hash, *P_H_AeL[RAIZ]);
+	if(relacionadas==NULL){
+		fprintf(arq,"Hashtag nao encontrada.\n");
+	}
+	else{
+		if(op.g == 0){
+			while(aux_user!=NULL){
+				fprintf(arq,"#%s, %d\n", aux_rel->dado->nome, aux_rel->encontros);
+				aux_rel=aux_rel->pont[PROX];
+			}
+		}
+		else{	
+			while(cont<op.g&&aux_user!=NULL){
+				fprintf(arq,"#%s, %d\n", aux_rel->dado->nome, aux_rel->encontros);
+				aux_rel=aux_rel->pont[PROX];
+				cont++;
+			}
+		}
+	}
 	fim = clock(); 
-	tempo =(float)(fim-comeco)/CLOCKS_PER_SEC; 
+	tempo =(float)(fim-comeco)/CLOCKS_PER_SEC;
+	fprinf(arq,"TEMPO:%f segundos",tempo);
 		
+	return;
+}
+relacionadas* cadehashtag(char nome[], hashtag raiz){
+	if(raiz==NULL)
+		return NULL;	
+	hashtag *aux_hash = raiz
+	i=strcmp(nome,aux_hash->nome);
+	if(i==0)
+		return aux_hash->associadas;
+	else if(i<0)
+		return cadehashtag(nome,aux_hash->pont[ESQ]);
+	else if(i>0)
+		return cadehashtag(nome,aux_hash->pont[DIR]);		
+	
+}
 

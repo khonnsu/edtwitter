@@ -66,7 +66,8 @@ typedef struct{
 	int d;
 	int e;
 	int f;
-	char g[279];
+	int g;
+	char hash[279];
 }ops;
 
 //Funcoes 
