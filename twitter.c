@@ -873,7 +873,7 @@ int atualiza_lista_r(relaciondas *novo ,hashtag **P_L){
 }
 	
 	
-relacionadas *tira_lista_h(relacionadas *novo, relacionadas **P_L)
+relacionadas *tira_lista_r(relacionadas *novo, relacionadas **P_L)
 {
 	if(novo == P_L[FIM]){
 		novo->pont[ANT]->pont[PROX] = NULL;
@@ -937,7 +937,12 @@ if(filho->encontros > pai->encontros)
       return filho;
    }
 return pai;
-}	
+}
+	
+void destroi()
+{
+	
+}
 
 
 void leparametros(FILE *arquivo, ops *op){	//recebe ponteiro para estrutura com operacoes
@@ -1081,7 +1086,8 @@ void escrevearquivo(FILE *arq, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T
 		
 	return;
 }
-relacionadas* cadehashtag(char nome[], hashtag raiz){
+				
+relacionadas* cadehashtag(char nome[], hashtag *raiz){
 	if(raiz==NULL)
 		return NULL;	
 	hashtag *aux_hash = raiz
@@ -1094,4 +1100,3 @@ relacionadas* cadehashtag(char nome[], hashtag raiz){
 		return cadehashtag(nome,aux_hash->pont[DIR]);		
 	
 }
-
