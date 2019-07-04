@@ -1104,8 +1104,7 @@ void escrevearquivo(FILE *arq, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T
 }
 				
 relacionadas* cadehashtag(char nome[], hashtag *raiz){
-	if(raiz==NULL)
-		return NULL;	
+	if(raiz==NULL) return NULL;	
 	hashtag *aux_hash = raiz
 	i=strcmp(nome,aux_hash->nome);
 	if(i==0)
