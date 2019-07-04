@@ -4,9 +4,15 @@ hashtag *P_H_AeL[3] = [0=ini, 1=fim, 2=raiz]
 tweet *P_H_L[2] =  [0=ini, 1=fim]
 */
 
-typedef usuario** USUARIO;
-typedef hashtag** HASHTAG;
-typedef tweet** TWEET;
+typedef usuario** APONTA_USUARIOS;
+typedef hashtag** APONTA_HASHTAGS;
+typedef tweet** APONTA_TWEETS;
+
+typedef usuario* USUARIO;
+typedef hashtag* HASHTAG;
+typedef tweet* TWEET;
+
+
 
 #include "twitter.h"
 int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L){
@@ -1123,18 +1129,21 @@ void cria(usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
 	int i, j;
 	for(i=0;i<3;i++)
 	{
+		*P_U_AeL=malloc(12*sizeof(*usuario));
+		*P_H_AeL=malloc(3*sizeof(*hashtag));
+		*P_T_L=malloc(3*sizeof(*tweet));
 		for(j=0;j<4;j++)
-		*P_U_AeL[j][i]=
-		*P_H_AeL[i]= 
-		*P_T_L[i]=
+		  *P_U_AeL[j][i]=NULL;
+		*P_H_AeL[i]=NULL; 
+		*P_T_L[i]=NULL;
 	}
 }
 				
 void encerra(usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
 {
-	destroi_u(P_U_AeL);
-	destroi_h(P_H_AeL);
-	destroi_t(P_T_L);
+	destroi_u(*P_U_AeL);
+	destroi_h(*P_H_AeL);
+	destroi_t(*P_T_L);
 }
 
 void destroi_u(usuario **lixo)
@@ -1145,6 +1154,17 @@ void destroi_u(usuario **lixo)
 	     aux= *lixo[POST][INI];
 	     *lixo[POST][INI] = *lixo[POST][INI]->pont[PROX];
 	     destroi_u_pont(aux->pont);
+	     free(aux);
+	}
+}
+				
+void destroi_u_pont(usuario **lixo)
+{
+	usuario *aux;
+	int i;
+	for(i=0; i<16; i++,*lixo = lixo[1])
+	{
+	     aux= *lixo;
 	     free(aux);
 	}
 }
@@ -1160,6 +1180,19 @@ void destroi_t(tweet **lixo)
 	     free(aux);
 	}
 }
+				
+				
+void destroi_t_pont(tweet **lixo)
+{
+	tweet *aux;
+	int i;
+	for(i=0; i<4; i++,*lixo = lixo[1])
+	{
+	     aux= *lixo;
+	     free(aux);
+	}
+}	
+
 		  
 void destroi_h(hashtag **lixo)
 {
