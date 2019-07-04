@@ -42,7 +42,7 @@ typedef struct{
 typedef struct{
 	char nome[140];
 	int usos;
-	relacionadas *associadas;
+	relacionadas *associadas[3] // [0=ini, 1=fim, 2=raiz];
 	
 	struct hashtag *pont[4];	//[0=prox, 1=dir, 2=esq, 3= ant]
 }hashtag;
