@@ -25,7 +25,9 @@ int main(int argc, char **argv){
 	leparametros(param,&operacao);
 
 	//função que cria P_U_AeL, P_H,AeL, P_T_L
-	learquivo(entra,P_U_AeL,P_H_AeL,P_T_L);
+	learquivo(entra,*P_U_AeL,*P_H_AeL,*P_T_L);
+
+	escrevearquivo(saida,*P_U_AeL, *P_H_AeL, *P_T_l, operacao,comeco);	
 
 	
 		
