@@ -1,15 +1,20 @@
 /*
-usuario **P_U_AeL[4][3] = [0=post, 1=menc, 2=rts, 3=enga]	[0=ini, 1=fim, 2=raiz]
-hashtag **P_H_AeL[3] = [0=ini, 1=fim, 2=raiz]
-tweet **P_H_L[2] =  [0=ini, 1=fim]
+usuario *P_U_AeL[4][3] = [0=post, 1=menc, 2=rts, 3=enga]	[0=ini, 1=fim, 2=raiz]
+hashtag *P_H_AeL[3] = [0=ini, 1=fim, 2=raiz]
+tweet *P_H_L[2] =  [0=ini, 1=fim]
 */
+
+typedef usuario** USUARIO;
+typedef hashtag** HASHTAG;
+typedef tweet** TWEET;
+
 #include "twitter.h"
 int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L){
   
     usuario *user;
     hashtag *hash;
     tweet *atual;
-    l_hash **mesmo_T;
+    l_hash *mesmo_T;
 	  
     char nick[16];
     char simbolo;
@@ -30,13 +35,13 @@ int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L){
       	switch(simbolo){
 		case '@':
 	   		fscanf(arq,"%[^; ]s",n_mencionado);
-			*P_U_AeL[MENC][RAIZ] = verifica_exist(n_mencionado,NULL,MENC, 0,NULL,NULL, NULL,P_U_AeL,P_H_AeL,P_T_L);
+			*P_U_AeL[MENC][RAIZ] = verifica_exist(n_mencionado,NULL,MENC, 0,NULL,NULL, NULL,*P_U_AeL,*P_H_AeL,*P_T_L);
 	   		strcat(atual->texto,"@");
 	  		strcat(atual->texto,auxnick);
 			break;
 		case '#':
 			fscanf(arq,"%[^; ]s",hashtag);
-			*P_H_AeL[RAIZ] = verifica_hashtag(hashtag ,mesmo_T, NULL, NULL, P_H_AeL);
+			*P_H_AeL[RAIZ] = verifica_hashtag(hashtag ,mesmo_T, NULL, NULL, *P_H_AeL);
 			strcat(atual->texto,"#");
 			strcat(atual->texto,hashtag);
 		case ';':
@@ -49,7 +54,7 @@ int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L){
       fscanf(arq ,"%d",&atual->curtidas);
       fseek(arq, 1, SEEK_CUR);
 	      
-      *P_U_AeL[POST][RAIZ]= verifica_exist(nick, atual, POST, 0, NULL, NULL, NULL, P_U_AeL, P_H_AeL, P_T_L);
+      *P_U_AeL[POST][RAIZ]= verifica_exist(nick, atual, POST, 0, NULL, NULL, NULL, *P_U_AeL, *P_H_AeL, *P_T_L);
       relaciona(*mesmo_T);
       destroi(mesmo_T);
        
@@ -88,11 +93,11 @@ if(pai==NULL)
 				   raiz->contador[ENGA]= raiz->curtidas + raiz->contador[MENC] + raiz->contador[RTS];	// atualiza o engajamento
 
 
-				   atualiza_lista_u(raiz,POST,P_U_AeL)		
-				   atualiza_lista_u(raiz, RTS,P_U_AeL);
-				   atualiza_lista_u(raiz, ENGA,P_U_AeL);		//atualiza listas
+				   atualiza_lista_u(raiz,POST,*P_U_AeL)		
+				   atualiza_lista_u(raiz, RTS,*P_U_AeL);
+				   atualiza_lista_u(raiz, ENGA,*P_U_AeL);		//atualiza listas
 					
-				   *P_U_AeL[MENC][RAIZ] = verifica_exist(nick,lido,param, 1, NULL, NULL, raiz,P_U_AeL, P_H_AeL, P_T_L);
+				   *P_U_AeL[MENC][RAIZ] = verifica_exist(nick,lido,param, 1, NULL, NULL, raiz,*P_U_AeL, *P_H_AeL, *P_T_L);
 
 			    break;
 
@@ -100,8 +105,8 @@ if(pai==NULL)
 				raiz->contador[MENC]++; // incrementa contador de numero de MENÇÕES
 				raiz->contador[ENGA]= raiz->curtidas + raiz->contador[MENC] + raiz->contador[RTS];	// atualiza o engajamento
 
-				    atualiza_lista_u(raiz, ENGA,P_U_AeL);		//atualiza lista
-				    *P_U_AeL[POST][RAIZ] = verifica_exist(nick,lido,param, 1, NULL, NULL, raiz,P_U_AeL, P_H_AeL, P_T_L);
+				    atualiza_lista_u(raiz, ENGA,*P_U_AeL);		//atualiza lista
+				    *P_U_AeL[POST][RAIZ] = verifica_exist(nick,lido,param, 1, NULL, NULL, raiz,*P_U_AeL, *P_H_AeL, *P_T_L);
 
 			    break;
 
@@ -114,18 +119,18 @@ if(pai==NULL)
         else if(i<0)
         {
 		usuario *temp = raiz->pont[param][ESQ];
-                raiz->pont[param][ESQ]= verifica_exist(nick, lido, param, outro, raiz->pont[param][ESQ], raiz, procurado,P_U_AeL, P_H_AeL, P_T_L);
+                raiz->pont[param][ESQ]= verifica_exist(nick, lido, param, outro, raiz->pont[param][ESQ], raiz, procurado,*P_U_AeL, *P_H_AeL, *P_T_L);
 		if(temp!=raiz->pont[param][ESQ])
-		    raiz = atualiza_arvore_u(raiz->pont[param][ESQ], raiz, pai, param, P_U_AeL);
+		    raiz = atualiza_arvore_u(raiz->pont[param][ESQ], raiz, pai, param, *P_U_AeL);
 		return raiz;
         }
         else
         {	
 		usuario *temp = raiz->pont[param][DIR];
 		
-                raiz->pont[param][DIR]= verifica_exist(nick,lido,param, outro, raiz->pont[POST][DIR], raiz,procurado , P_U_AeL, P_H_AeL, P_T_L);
+                raiz->pont[param][DIR]= verifica_exist(nick,lido,param, outro, raiz->pont[POST][DIR], raiz,procurado , *P_U_AeL, *P_H_AeL, *P_T_L);
 		if(temp!=raiz->pont[param][DIR])
-		    raiz = atualiza_arvore_u(raiz->pont[param][DIR], raiz, pai, param, P_U_AeL);
+		    raiz = atualiza_arvore_u(raiz->pont[param][DIR], raiz, pai, param, *P_U_AeL);
                 return raiz;
         }
 	    
@@ -136,12 +141,12 @@ if(pai==NULL)
 	       switch(param)
 		{
 		       case POST:
-			return cria_user(nick, lido, 0, P_U_AeL, P_H_AeL, P_T_L);
+			return cria_user(nick, lido, 0, *P_U_AeL, *P_H_AeL, *P_T_L);
 
 		       break;
 
 		       case MENC:
-			  return cria_user(nick, NULL, 1, P_U_AeL, P_H_AeL, P_T_L);
+			  return cria_user(nick, NULL, 1, *P_U_AeL, *P_H_AeL, *P_T_L);
 		       break;
 	       }
        }
@@ -160,6 +165,7 @@ usuario *cria_user(char *nick, tweet *lido, int flag_menc, usuario **P_U_AeL, ha
 	usuario *novo;
         novo= malloc(sizeof(usuario));
         strcpy(novo.nickname,nick);
+	novo->pont=malloc(16*sizeof(*usuario));
 		
 	int i, j;
 	for(i=0;i<4;i++)
@@ -176,7 +182,7 @@ usuario *cria_user(char *nick, tweet *lido, int flag_menc, usuario **P_U_AeL, ha
 	   
 	
 	if(lido!=NULL){
-	lido->prox_rank=NULL;
+	lido->pont[PROX]=NULL;
 	lido->prox_user=NULL;
         novo->curtidas= lido->curtidas;
         novo->tweets= lido;
@@ -186,10 +192,10 @@ usuario *cria_user(char *nick, tweet *lido, int flag_menc, usuario **P_U_AeL, ha
 	}
 	
 	
-		insere_lista_u(novo, POST,P_U_AeL);
-		insere_lista_u(novo, MENC,P_U_AeL);
-		insere_lista_u(novo, RTS,P_U_AeL);
-		insere_lista_u(novo, ENGA,P_U_AeL);
+		insere_lista_u(novo, POST,*P_U_AeL);
+		insere_lista_u(novo, MENC,*P_U_AeL);
+		insere_lista_u(novo, RTS,*P_U_AeL);
+		insere_lista_u(novo, ENGA,*P_U_AeL);
 	
 	
 
@@ -256,8 +262,8 @@ int atualiza_lista_u(usuario *user,int param,usuario **P_U_AeL){
 			    		break;
 				aux= aux->pont[param][ANT];
 			}
-			user= tira_lista(user, param, P_U_AeL);
-			user= insere_pre_aux(user, aux, param,  P_U_AeL);
+			user= tira_lista(user, param, *P_U_AeL);
+			user= insere_pre_aux(user, aux, param, *P_U_AeL);
 		
 	                 return 1;
 		}
@@ -377,7 +383,7 @@ usuario *atualiza_arvore_u(usuario *filho,usuario *pai,usuario *vo,int param,usu
 
 
 
-hashtag *verifica_hashtag(char *hash, l_hash **mesmo_T, hashtag *raiz, hashtag *pai, hashtag **P_H_AeL)
+hashtag *verifica_hashtag(char *hash, l_hash *mesmo_T, hashtag *raiz, hashtag *pai, hashtag **P_H_AeL)
 {
 if(pai==NULL)
   raiz= *P_H_AeL[RAIZ];
@@ -389,16 +395,15 @@ if(pai==NULL)
         {
 	    raiz->usos++; // incrementa contador de usos da hashtag
 		
-	    atualiza_lista_h(raiz ,P_H_AeL)		//atualiza lista
+	    atualiza_lista_h(raiz ,*P_H_AeL)		//atualiza lista
 		    
-	   l_hash novo;
 	   l_hash *aux;
-           novo->dado= raiz;
-	   novo->prox= NULL;
 	   aux= mesmoT;
 	   while(aux->prox!=NULL)
-	       aux=aux->prox;
-	   aux->prox=novo;
+	      aux=aux->prox;
+	   aux->prox=malloc(sizeof(l_hash));
+	   aux->prox->dado= raiz;
+           aux->prox->prox= NULL;
 	  
 	
            return raiz;
@@ -408,31 +413,32 @@ if(pai==NULL)
         {
                 hashtag *temp = raiz->pont[ESQ];
 		
-		raiz->pont[ESQ] = verifica_hashtag(hash ,mesmo_T , raiz->pont[ESQ], raiz, P_H_AeL);
+		raiz->pont[ESQ] = verifica_hashtag(hash ,mesmo_T , raiz->pont[ESQ], raiz, *P_H_AeL);
 		if(temp!=raiz->pont[ESQ])
-		    raiz = atualiza_arvore_h(raiz->pont[ESQ], raiz, pai, P_H_AeL);
+		    raiz = atualiza_arvore_h(raiz->pont[ESQ], raiz, pai, *P_H_AeL);
 		return raiz;
 
         }
         else
         {
 		hashtag *temp = raiz->pont[DIR];
-                raiz->pont[DIR]= verifica_hashtag(hash,mesmo_T, raiz->pont[DIR], raiz, P_H_AeL);
+                raiz->pont[DIR]= verifica_hashtag(hash,mesmo_T, raiz->pont[DIR], raiz, *P_H_AeL);
 		if(temp!=raiz->pont[DIR])
-		    raiz = atualiza_arvore_h(raiz->pont[DIR], raiz, pai, P_H_AeL);
+		    raiz = atualiza_arvore_h(raiz->pont[DIR], raiz, pai, *P_H_AeL);
                 return raiz;
         }
     else // não encontrou na arvore e achou ponto para incerção
     {
-	raiz= cria_hash(hash, P_H_AeL);
-	l_hash novo;
+	raiz= cria_hash(hash, *P_H_AeL);
+	
 	l_hash *aux;
-        novo->dado= raiz;
-        novo->prox= NULL;
 	aux= mesmoT;
 	while(aux->prox!=NULL)
 	   aux=aux->prox;
-	aux->prox=novo;
+	aux->prox=malloc(sizeof(l_hash));
+	aux->prox->dado= raiz;
+        aux->prox->prox= NULL;
+	    
 	    
 	return raiz;
     }	
@@ -449,7 +455,12 @@ hashtag *cria_hash(char *hash,hashtag **P_H_AeL)
 		
         novo->usos= 1;
 
-        novo = insere_lista_h(novo,P_H_AeL);
+        novo = insere_lista_h(novo,*P_H_AeL);
+	
+	hash->associadas = malloc(3*sizeof(*relacionadas));	
+	int i;
+	for(i=0;i<3;i++)
+		hash->associadas[i]=NULL;
 
         return novo;
 }
@@ -478,7 +489,7 @@ hashtag *insere_lista_h(hashtag *novo,hashtag **P_H_AeL){
                     aux=aux->pont[ANT];
                 }
 		
-		novo= insere_pre_aux_h(novo, aux, P_H_AeL);
+		novo= insere_pre_aux_h(novo, aux, *P_H_AeL);
                 
         }
 	else
@@ -515,8 +526,8 @@ int atualiza_lista_h(hashtag *hash ,hashtag **P_H_AeL){
 				aux= aux->pont[ANT];
 			}
 			
-			hash= tira_lista_h(hash, P_H_AeL);
-			hash= insere_pre_aux_h(hash, aux, P_H_AeL);
+			hash= tira_lista_h(hash, *P_H_AeL);
+			hash= insere_pre_aux_h(hash, aux, *P_H_AeL);
 		
 	                 return 1;
 		}
@@ -640,7 +651,7 @@ tweet *insere_lista_t(tweet *novo, tweet *P_T_L){
                     aux=aux->pont[ANT];
                 }
 		
-	    novo= insere_pre_aux_t(novo, aux,P_T_L);
+	    novo= insere_pre_aux_t(novo, aux, *P_T_L);
 	}
         else
        	{
@@ -713,16 +724,18 @@ void ad_rel(hashtag *aux1 , hashtag *aux2)
 {
     if(aux1->associadas[RAIZ]==NULL)
     {
-	relacionadas *novo;
-	novo= malloc(sizeof(relacionadas));
-	novo->dado=aux2;
-	int i;
-	for(i=0; i<4; i++)
-	    novo->pont[i]=NULL;
+	aux1->associadas= malloc(3* sizeof(*relacionadas));
+	for(i=0; i<3; i++)
+	   aux1->associadas[i]=NULL;
+
+	    
+        aux1->associadas[raiz] = cria_r(aux2, aux1->associadas); 
+	    
     }
     else
     {
-	    acha_rel(aux2, aux1->associadas, aux1->associadas[RAIZ], NULL);
+	   
+	  aux1->associadas[RAIZ] = acha_rel(aux2, aux1->associadas, aux1->associadas[RAIZ], NULL);
     }
 	
 }
@@ -736,7 +749,7 @@ if(raiz!=NULL)
         {
 	    raiz->encontros++; // incrementa contador de usos da hashtag
 		
-	    atualiza_lista_r(raiz ,ponts)		//atualiza lista 
+	    atualiza_lista_r(raiz , *ponts)		//atualiza lista 
 	
            return raiz;
         }
@@ -747,21 +760,21 @@ if(raiz!=NULL)
 		
 		raiz->pont[ESQ] = acha_rel(procurada, *ponts, raiz->pont[ESQ], raiz);
 		if(temp!=raiz->pont[ESQ])
-		    raiz = atualiza_arvore_r(raiz->pont[ESQ], raiz, pai, ponts);
+		    raiz = atualiza_arvore_r(raiz->pont[ESQ], raiz, pai, *ponts);
 		return raiz;
 
         }
         else
         {
-		hashtag *temp = raiz->pont[DIR];
+		relacionadas *temp = raiz->pont[DIR];
                 raiz->pont[DIR]= acha_rel(procurada,*ponts , raiz->pont[DIR], raiz);
 		if(temp!=raiz->pont[DIR])
-		    raiz = atualiza_arvore_r(raiz->pont[DIR], raiz, pai, ponts);
+		    raiz = atualiza_arvore_r(raiz->pont[DIR], raiz, pai, *ponts);
                 return raiz;
         }
     else // não encontrou na arvore e achou ponto para incerção
     {
-	raiz= cria_r(aux2, ponts);    
+	raiz= cria_r(aux2, *ponts);    
 	return raiz;
 	    
     }	
@@ -772,12 +785,12 @@ if(raiz!=NULL)
 relacionadas *cria_r(hashtag *nova,relacionadas **P_R)
 {	
 	relacionadas *novo;
-        novo= malloc(sizeof(relacionadas));
+        novo= malloc(3*sizeof(*relacionadas));
         strcpy(novo->dado->nome,nova->nome);
 		
         novo->encontros= 1;
 
-        novo = insere_lista_r(novo,P_R);
+        novo = insere_lista_r(novo,*P_R);
 
         return novo;
 }
@@ -785,10 +798,10 @@ relacionadas *cria_r(hashtag *nova,relacionadas **P_R)
 	
 relacionadas *insere_lista_r(relacionadas *novo, relacionadas **P_R)
 {	
-	if(P_R[FIM]!=NULL) // caso a lista não seja vazia
+	if(*P_R[FIM]!=NULL) // caso a lista não seja vazia
         {
             relacionadas *aux;
-            aux=P_R[FIM];
+            aux=*P_R[FIM];
 
                 while(aux!=NULL)	// encontra primeiro item da lista com numero >= de posts
                 {
@@ -804,15 +817,15 @@ relacionadas *insere_lista_r(relacionadas *novo, relacionadas **P_R)
                     aux=aux->pont[ANT];
                 }
 		
-		novo= insere_pre_aux_r(novo, aux, P_R);
+		novo= insere_pre_aux_r(novo, aux, *P_R);
                 
         }
 	else
        	{
  	        novo->pont[ANT]=NULL;
                 novo->pont[PROX]=NULL;
-		P_L[INI]= novo;
-		P_L[FIM]= novo;
+		*P_R[INI]= novo;
+		*P_R[FIM]= novo;
         }
 	
 	return novo;
@@ -820,17 +833,17 @@ relacionadas *insere_lista_r(relacionadas *novo, relacionadas **P_R)
 }
 }
 	
-relacionadas *insere_pre_aux_r(relacionadas *novo, relaciondas *aux,relaciondas **P_L)
+relacionadas *insere_pre_aux_r(relacionadas *novo, relaciondas *aux,relaciondas **P_R)
 {
 	if(aux==NULL)
 	{
-		novo->pont[PROX]=P_L[INI];
-		P_L[INI]->pont[ANT]= novo;
-		P_L[INI]= novo;
+		novo->pont[PROX]=*P_L[INI];
+		*P_L[INI]->pont[ANT]= novo;
+		*P_L[INI]= novo;
 	}
 	else
 	{
-	   if(aux!=P_L[FIM])
+	   if(aux!=*P_L[FIM])
 	   {
 		relaciondas *terceiro;
 		terceiro = aux->pont[PROX];
@@ -843,9 +856,9 @@ relacionadas *insere_pre_aux_r(relacionadas *novo, relaciondas *aux,relaciondas 
 	   }
 	   else
            {
-		novo->pont[ANT]=P_L[FIM];
-		P_L[FIM]->pont[PROX]= novo;
-		P_L[FIM]= novo;
+		novo->pont[ANT]=*P_R[FIM];
+		*P_R[FIM]->pont[PROX]= novo;
+		*P_R[FIM]= novo;
 	   }
 	 }
 	
@@ -853,8 +866,8 @@ relacionadas *insere_pre_aux_r(relacionadas *novo, relaciondas *aux,relaciondas 
 }
 	
 	
-int atualiza_lista_r(relaciondas *novo ,hashtag **P_L){
-	if(novo!=P_L[INI])
+int atualiza_lista_r(relaciondas *novo ,hashtag **P_R){
+	if(novo!=*P_R[INI])
 		if(novos->encontros > novo->pont[ANT]->encontros)
 		{
 			relacionadas *aux;
@@ -874,8 +887,8 @@ int atualiza_lista_r(relaciondas *novo ,hashtag **P_L){
 				aux= aux->pont[ANT];
 			}
 			
-			novo= tira_lista_r(hash, P_H_AeL);
-			novo= insere_pre_aux_r(hash, aux, P_H_AeL);
+			novo= tira_lista_r(hash, *P_R);
+			novo= insere_pre_aux_r(hash, aux, *P_R);
 		
 	                 return 1;
 		}
@@ -883,11 +896,11 @@ int atualiza_lista_r(relaciondas *novo ,hashtag **P_L){
 }
 	
 	
-relacionadas *tira_lista_r(relacionadas *novo, relacionadas **P_L)
+relacionadas *tira_lista_r(relacionadas *novo, relacionadas **P_R)
 {
-	if(novo == P_L[FIM]){
+	if(novo == *P_R[FIM]){
 		novo->pont[ANT]->pont[PROX] = NULL;
-		P_L[FIM] = novo->pont[ANT];
+		*P_R[FIM] = novo->pont[ANT];
 		novo->pont[ANT]= NULL;
 	}
 	else{
@@ -940,7 +953,7 @@ if(filho->encontros > pai->encontros)
 	      k=DIR;
 	   }
 	
-	   P_L[RAIZ] = filho;
+	   *P_R[RAIZ] = filho;
 	   pai->pont[j] = filho->pont[k];
 	   filho->pont[k] = pai;
 	}
@@ -948,17 +961,6 @@ if(filho->encontros > pai->encontros)
    }
 return pai;
 }	
-
-void destroi(l_hash **lixo)
-{
-	l_hash *aux;
-	while(*lixo!=NULL)
-	{
-	     aux= *lixo;
-	     *lixo = *lixo->prox;
-	     free(aux);
-	}
-}
 
 
 void leparametros(FILE *arquivo, ops *op){	//recebe ponteiro para estrutura com operacoes
@@ -1115,25 +1117,84 @@ relacionadas* cadehashtag(char nome[], hashtag *raiz){
 		return cadehashtag(nome,aux_hash->pont[DIR]);		
 	
 }
-				
-int encerra(usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
+
+void cria(usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
 {
-	int retorno=0;
-	
-	if(destroi_u(P_U_AeL))
-           retorno=1;
-	if(destroi_h(P_H_AeL))
-           retorno=1;
-	if(destroi_t(P_T_AeL))
-           retorno=1;
-	
-	return retorno;
+	int i, j;
+	for(i=0;i<3;i++)
+	{
+		for(j=0;j<4;j++)
+		*P_U_AeL[j][i]=
+		*P_H_AeL[i]= 
+		*P_T_L[i]=
+	}
+}
+				
+void encerra(usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
+{
+	destroi_u(P_U_AeL);
+	destroi_h(P_H_AeL);
+	destroi_t(P_T_L);
+}
+
+void destroi_u(usuario **lixo)
+{
+	usuario *aux;
+	while(*lixo[POST][INI]!=NULL)
+	{
+	     aux= *lixo[POST][INI];
+	     *lixo[POST][INI] = *lixo[POST][INI]->pont[PROX];
+	     destroi_u_pont(aux->pont);
+	     free(aux);
+	}
+}
+				
+void destroi_t(tweet **lixo)
+{
+	tweet *aux;
+	while(*lixo[INI]!=NULL)
+	{
+	     aux= *lixo[INI];
+	     *lixo[INI] = *lixo[INI]->pont[PROX];
+	     destroi_t_pont(aux->pont);
+	     free(aux);
+	}
+}
+		  
+void destroi_h(hashtag **lixo)
+{
+	hashtag *aux;
+	while(*lixo[INI]!=NULL)
+	{
+	     aux= *lixo[INI];
+	     *lixo[INI] = *lixo[INI]->pont[PROX];
+	     destroi_r(aux->associadas);
+	     free(aux);
+	}
 }
 				
 				
+void destroi_r(relacionadas **lixo)
+{
+	relacionadas *aux;
+	while(*lixo[INI]!=NULL)
+	{
+	     aux= *lixo[INI];
+	     *lixo[INI] = *lixo[INI]->prox;
+	     free(aux);
+	}
+}
 				
-				
-				
+void destroi(l_hash **lixo)
+{
+	l_hash *aux;
+	while(*lixo[INI]!=NULL)
+	{
+	     aux= *lixo[INI];
+	     *lixo[INI] = *lixo[INI]->pont[PROX];
+	     free(aux);
+	}
+}
 				
 	
 				
