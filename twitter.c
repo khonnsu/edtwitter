@@ -41,13 +41,13 @@ int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L){
       	switch(simbolo){
 		case '@':
 	   		fscanf(arq,"%[^; ]s",n_mencionado);
-			*P_U_AeL[MENC][RAIZ] = verifica_exist(n_mencionado,NULL,MENC, 0,NULL,NULL, NULL,*P_U_AeL,*P_H_AeL,*P_T_L);
+			*P_U_AeL[MENC][RAIZ] = verifica_exist(n_mencionado,NULL,MENC, 0,*P_U_AeL[param][RAIZ], NULL,*P_U_AeL,*P_H_AeL,*P_T_L);
 	   		strcat(atual->texto,"@");
 	  		strcat(atual->texto,auxnick);
 			break;
 		case '#':
 			fscanf(arq,"%[^; ]s",hashtag);
-			*P_H_AeL[RAIZ] = verifica_hashtag(hashtag ,mesmo_T, NULL, NULL, *P_H_AeL);
+			*P_H_AeL[RAIZ] = verifica_hashtag(hashtag ,mesmo_T, *P_H_AeL[RAIZ], *P_H_AeL);
 			strcat(atual->texto,"#");
 			strcat(atual->texto,hashtag);
 		case ';':
@@ -60,8 +60,8 @@ int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L){
       fscanf(arq ,"%d",&atual->curtidas);
       fseek(arq, 1, SEEK_CUR);
 	      
-      *P_U_AeL[POST][RAIZ]= verifica_exist(nick, atual, POST, 0, NULL, NULL, NULL, *P_U_AeL, *P_H_AeL, *P_T_L);
-      relaciona(*mesmo_T);
+      *P_U_AeL[POST][RAIZ]= verifica_exist(nick, atual, POST, 0, *P_U_AeL[param][RAIZ], NULL, *P_U_AeL, *P_H_AeL, *P_T_L);
+      relaciona(mesmo_T);
       destroi(mesmo_T);
        
       insere_lista_t(atual, P_T_L);
@@ -72,11 +72,8 @@ int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L){
 
 
 
-usuario *verifica_usuario(char *nick,tweet *lido,int param,int outro,usuario *raiz, usuario *pai, usuario *procurado,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
-{
-if(pai==NULL)
-  raiz= *P_U_AeL[param][RAIZ];
-	
+usuario *verifica_usuario(char *nick,tweet *lido,int param,int outro,usuario *raiz, usuario *procurado,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
+{	
     if(raiz!=NULL)
     {
 
@@ -103,7 +100,7 @@ if(pai==NULL)
 				   atualiza_lista_u(raiz, RTS,*P_U_AeL);
 				   atualiza_lista_u(raiz, ENGA,*P_U_AeL);		//atualiza listas
 					
-				   *P_U_AeL[MENC][RAIZ] = verifica_exist(nick,lido,param, 1, NULL, NULL, raiz,*P_U_AeL, *P_H_AeL, *P_T_L);
+				   *P_U_AeL[MENC][RAIZ] = verifica_exist(nick,lido,param, 1, NULL,*P_U_AeL, *P_H_AeL, *P_T_L);
 
 			    break;
 
@@ -112,7 +109,7 @@ if(pai==NULL)
 				raiz->contador[ENGA]= raiz->curtidas + raiz->contador[MENC] + raiz->contador[RTS];	// atualiza o engajamento
 
 				    atualiza_lista_u(raiz, ENGA,*P_U_AeL);		//atualiza lista
-				    *P_U_AeL[POST][RAIZ] = verifica_exist(nick,lido,param, 1, NULL, NULL, raiz,*P_U_AeL, *P_H_AeL, *P_T_L);
+				    *P_U_AeL[POST][RAIZ] = verifica_exist(nick,lido,param, 1, NULL,*P_U_AeL, *P_H_AeL, *P_T_L);
 
 			    break;
 
@@ -125,18 +122,18 @@ if(pai==NULL)
         else if(i<0)
         {
 		usuario *temp = raiz->pont[param][ESQ];
-                raiz->pont[param][ESQ]= verifica_exist(nick, lido, param, outro, raiz->pont[param][ESQ], raiz, procurado,*P_U_AeL, *P_H_AeL, *P_T_L);
+                raiz->pont[param][ESQ]= verifica_exist(nick, lido, param, outro, raiz->pont[param][ESQ], procurado,*P_U_AeL, *P_H_AeL, *P_T_L);
 		if(temp!=raiz->pont[param][ESQ])
-		    raiz = atualiza_arvore_u(raiz->pont[param][ESQ], raiz, pai, param, *P_U_AeL);
+		    raiz = atualiza_arvore_u(raiz->pont[param][ESQ],raiz, param, *P_U_AeL);
 		return raiz;
         }
         else
         {	
 		usuario *temp = raiz->pont[param][DIR];
 		
-                raiz->pont[param][DIR]= verifica_exist(nick,lido,param, outro, raiz->pont[POST][DIR], raiz,procurado , *P_U_AeL, *P_H_AeL, *P_T_L);
+                raiz->pont[param][DIR]= verifica_exist(nick,lido,param, outro, raiz->pont[POST][DIR],procurado , *P_U_AeL, *P_H_AeL, *P_T_L);
 		if(temp!=raiz->pont[param][DIR])
-		    raiz = atualiza_arvore_u(raiz->pont[param][DIR], raiz, pai, param, *P_U_AeL);
+		    raiz = atualiza_arvore_u(raiz->pont[param][DIR],raiz, param, *P_U_AeL);
                 return raiz;
         }
 	    
@@ -334,53 +331,28 @@ usuario *insere_pre_aux(usuario *user, usuario *aux,int param, usuario **P_U_AeL
 	
 
 
-usuario *atualiza_arvore_u(usuario *filho,usuario *pai,usuario *vo,int param,usuario **P_U_AeL){
+usuario *atualiza_arvore_u(usuario *filho,usuario *pai,int param,usuario **P_U_AeL){
    if(filho->contador[param]>pai->contador[param])
    {
-	int i, j, k;
-	
-	if(vo!=NULL){
-	   if(vo->pont[param][DIR] == pai)
-	      i=DIR;
-	   else
-	      i=ESQ;
+	int j, k; //k=!j
 	   
-	   if(pai->pont[param][DIR] == filho)
-	   {
-	      j=DIR;
-	      k=ESQ;
-	   }
-	   else8
-	   {
-	      j=ESQ;
-	      k=DIR;
-	   }
-	   
-	vo->pont[param][i] = filho;
-	pai->pont[param][j] = filho->pont[param][k];
-	filho->pont[param][k] = pai;
+	if(pai->pont[param][DIR] == filho)
+	{
+	    j=DIR;
+	    k=ESQ;
 	}
-	   
 	else
 	{
-	   if(pai->pont[param][DIR] == filho)
-	   {
-	      j=DIR;
-	      k=ESQ;
-	   }
-	   else
-	   {
-	      j=ESQ;
-	      k=DIR;
-	   }
-	
-	   *P_U_AeL[param][RAIZ] = filho;
-	   pai->pont[param][j] = filho->pont[param][k];
-	   filho->pont[param][k] = pai;
+	   j=ESQ;
+	   k=DIR;
 	}
+	   
+	pai->pont[param][j] = filho->pont[param][k];
+	filho->pont[param][k] = pai;	 
       return filho; 
    }
-   return pai;
+   else
+      return pai;
 }
 
 	
@@ -389,11 +361,8 @@ usuario *atualiza_arvore_u(usuario *filho,usuario *pai,usuario *vo,int param,usu
 
 
 
-hashtag *verifica_hashtag(char *hash, l_hash *mesmo_T, hashtag *raiz, hashtag *pai, hashtag **P_H_AeL)
+hashtag *verifica_hashtag(char *hash, l_hash *mesmo_T, hashtag *raiz, hashtag **P_H_AeL)
 {
-if(pai==NULL)
-  raiz= *P_H_AeL[RAIZ];
-	
     if(raiz!=NULL)
     {
         int i =strcmp(hash,raiz->nome);
@@ -419,18 +388,18 @@ if(pai==NULL)
         {
                 hashtag *temp = raiz->pont[ESQ];
 		
-		raiz->pont[ESQ] = verifica_hashtag(hash ,mesmo_T , raiz->pont[ESQ], raiz, *P_H_AeL);
+		raiz->pont[ESQ] = verifica_hashtag(hash ,mesmo_T , raiz->pont[ESQ], *P_H_AeL);
 		if(temp!=raiz->pont[ESQ])
-		    raiz = atualiza_arvore_h(raiz->pont[ESQ], raiz, pai, *P_H_AeL);
+		    raiz = atualiza_arvore_h(raiz->pont[ESQ], raiz, *P_H_AeL);
 		return raiz;
 
         }
         else
         {
 		hashtag *temp = raiz->pont[DIR];
-                raiz->pont[DIR]= verifica_hashtag(hash,mesmo_T, raiz->pont[DIR], raiz, *P_H_AeL);
+                raiz->pont[DIR]= verifica_hashtag(hash,mesmo_T, raiz->pont[DIR], *P_H_AeL);
 		if(temp!=raiz->pont[DIR])
-		    raiz = atualiza_arvore_h(raiz->pont[DIR], raiz, pai, *P_H_AeL);
+		    raiz = atualiza_arvore_h(raiz->pont[DIR], raiz, *P_H_AeL);
                 return raiz;
         }
     else // não encontrou na arvore e achou ponto para incerção
@@ -590,17 +559,11 @@ hashtag *insere_pre_aux_h(hashtag *hash, hashtag *aux,hashtag **P_H_AeL){
 }
 
 
-hashtag *atualiza_arvore_h(hashtag *filho,hashtag *pai,hashtag *vo, hashtag **P_H_AeL){
+hashtag *atualiza_arvore_h(hashtag *filho,hashtag *pai, hashtag **P_H_AeL){
 if(filho->usos > pai->usos)
    {
-	int i, j, k;
-	
-	if(vo!=NULL){
-	   if(vo->pont[DIR] == pai)
-	      i=DIR;
-	   else
-	      i=ESQ;
-	   
+	int j, k;  //k=!j
+ 
 	   if(pai->pont[DIR] == filho)
 	   {
 	      j=DIR;
@@ -611,28 +574,8 @@ if(filho->usos > pai->usos)
 	      j=ESQ;
 	      k=DIR;
 	   }
-	   
-	   vo->pont[i] = filho;
 	   pai->pont[j] = filho->pont[k];
 	   filho->pont[k] = pai;
-	}  
-	else
-	{
-	   if(pai->pont[DIR] == filho)
-	   {
-	      j=DIR;
-	      k=ESQ;
-	   }
-	   else
-	   {
-	      j=ESQ;
-	      k=DIR;
-	   }
-	
-	   *P_U_AeL[RAIZ] = filho;
-	   pai->pont[j] = filho->pont[k];
-	   filho->pont[k] = pai;
-	}
       return filho;
    }
 return pai;
@@ -741,12 +684,12 @@ void ad_rel(hashtag *aux1 , hashtag *aux2)
     else
     {
 	   
-	  aux1->associadas[RAIZ] = acha_rel(aux2, aux1->associadas, aux1->associadas[RAIZ], NULL);
+	  aux1->associadas[RAIZ] = acha_rel(aux2, aux1->associadas, aux1->associadas[RAIZ]);
     }
 	
 }
 	
-relacionadas *acha_rel(hashtag *procurada,  relacionadas **ponts,  relacionadas *raiz, relacionadas *pai)
+relacionadas *acha_rel(hashtag *procurada,  relacionadas **ponts,  relacionadas *raiz)
 {
 if(raiz!=NULL)
     {
@@ -764,9 +707,9 @@ if(raiz!=NULL)
         {
                 relacionadas *temp = raiz->pont[ESQ];
 		
-		raiz->pont[ESQ] = acha_rel(procurada, *ponts, raiz->pont[ESQ], raiz);
+		raiz->pont[ESQ] = acha_rel(procurada, *ponts, raiz->pont[ESQ]);
 		if(temp!=raiz->pont[ESQ])
-		    raiz = atualiza_arvore_r(raiz->pont[ESQ], raiz, pai, *ponts);
+		    raiz = atualiza_arvore_r(raiz->pont[ESQ], raiz, *ponts);
 		return raiz;
 
         }
@@ -775,7 +718,7 @@ if(raiz!=NULL)
 		relacionadas *temp = raiz->pont[DIR];
                 raiz->pont[DIR]= acha_rel(procurada,*ponts , raiz->pont[DIR], raiz);
 		if(temp!=raiz->pont[DIR])
-		    raiz = atualiza_arvore_r(raiz->pont[DIR], raiz, pai, *ponts);
+		    raiz = atualiza_arvore_r(raiz->pont[DIR], raiz, *ponts);
                 return raiz;
         }
     else // não encontrou na arvore e achou ponto para incerção
@@ -920,16 +863,10 @@ relacionadas *tira_lista_r(relacionadas *novo, relacionadas **P_R)
 	
 }
 
-relaciondas *atualiza_arvore_r(relacionadas *filho,relacionadas *pai,relacionadas *vo, relacionadas **P_L){
+relaciondas *atualiza_arvore_r(relacionadas *filho,relacionadas *pai, relacionadas **P_L){
 if(filho->encontros > pai->encontros)
    {
-	int i, j, k;
-	
-	if(vo!=NULL){
-	   if(vo->pont[DIR] == pai)
-	      i=DIR;
-	   else
-	      i=ESQ;
+	int j, k;    //k=!j
 	   
 	   if(pai->pont[DIR] == filho)
 	   {
@@ -942,27 +879,9 @@ if(filho->encontros > pai->encontros)
 	      k=DIR;
 	   }
 	   
-	   vo->pont[i] = filho;
 	   pai->pont[j] = filho->pont[k];
 	   filho->pont[k] = pai;
-	}  
-	else
-	{
-	   if(pai->pont[DIR] == filho)
-	   {
-	      j=DIR;
-	      k=ESQ;
-	   }
-	   else
-	   {
-	      j=ESQ;
-	      k=DIR;
-	   }
 	
-	   *P_R[RAIZ] = filho;
-	   pai->pont[j] = filho->pont[k];
-	   filho->pont[k] = pai;
-	}
       return filho;
    }
 return pai;
