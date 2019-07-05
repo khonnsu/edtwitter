@@ -24,10 +24,15 @@ int main(int argc, char **argv){
 
 	leparametros(param,&operacao);
 
-	//função que cria P_U_AeL, P_H,AeL, P_T_L
+	APONTA_USUARIOS meus_usuarios = cria_u();
+	APONTA_HASHTAGS minhas_hashtags = cria_h();
+	APONTA_TWEETS meus_tweets = cria_t();
+	
 	learquivo(entra,*P_U_AeL,*P_H_AeL,*P_T_L);
 
-	escrevearquivo(saida,*P_U_AeL, *P_H_AeL, *P_T_l, operacao,comeco);	
+	escrevearquivo(saida,*P_U_AeL, *P_H_AeL, *P_T_l, operacao,comeco);
+	
+	encerra(*P_U_AeL, *P_H_AeL, *P_T_l);
 
 	
 		
