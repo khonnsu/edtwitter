@@ -1124,19 +1124,30 @@ relacionadas* cadehashtag(char nome[], hashtag *raiz){
 	
 }
 
-void cria(usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
+usuario *cria_u()
 {
 	int i, j;
+	*P_U_AeL=malloc(12*sizeof(*usuario));
 	for(i=0;i<3;i++)
-	{
-		*P_U_AeL=malloc(12*sizeof(*usuario));
-		*P_H_AeL=malloc(3*sizeof(*hashtag));
-		*P_T_L=malloc(3*sizeof(*tweet));
 		for(j=0;j<4;j++)
 		  *P_U_AeL[j][i]=NULL;
+}
+				
+hashtag *cria_h ()
+{
+	int i;
+	*P_H_AeL=malloc(3*sizeof(*hashtag));
+	for(i=0;i<3;i++)
 		*P_H_AeL[i]=NULL; 
-		*P_T_L[i]=NULL;
-	}
+
+}
+				
+tweet *cria_t ()
+{
+	int i;
+	*P_T_L=malloc(3*sizeof(*tweet));
+	for(i=0;i<3;i++)
+	    *P_T_L[i]=NULL;
 }
 				
 void encerra(usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
