@@ -78,29 +78,43 @@ typedef struct{
 
 //Funcoes
 
-usuario *cria_user(char *nick, tweet *lido, int flag_menc, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L);
+int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L);
 usuario *verifica_usuario(char *nick,tweet *lido,int param,int outro,usuario *raiz, usuario *procurado,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L);
+usuario *cria_user(char *nick, tweet *lido, int flag_menc, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L);
 usuario *insere_lista_u(usuario *novo,int param,usuario **P_U_AeL);
+int atualiza_lista_u(usuario *user,int param,usuario **P_U_AeL);
 usuario *tira_lista(usuario *user,int param, usuario **P_U_AeL);
 usuario *insere_pre_aux(usuario *user, usuario *aux,int param, usuario **P_U_AeL);
 usuario *atualiza_arvore_u(usuario *filho,usuario *pai,int param,usuario **P_U_AeL);
-
+hashtag *verifica_hashtag(char *hash, l_hash *mesmo_T, hashtag *raiz, hashtag **P_H_AeL);
 hashtag *cria_hash(char *hash,hashtag **P_H_AeL);
 hashtag *insere_lista_h(hashtag *novo,hashtag **P_H_AeL);
+int atualiza_lista_h(hashtag *hash,hashtag **P_H_AeL);
 hashtag *tira_lista_h(hashtag *hash, hashtag **P_H_AeL);
 hashtag *insere_pre_aux_h(hashtag *hash, hashtag *aux,hashtag **P_H_AeL);
 hashtag *atualiza_arvore_h(hashtag *filho,hashtag *pai, hashtag **P_H_AeL);
-
-tweet *insere_lista_t(tweet *novo, tweet **P_T_L);
+tweet *insere_lista_t(tweet *novo, tweet *P_T_L);
 tweet *insere_pre_aux_t(tweet *t, tweet *aux, tweet **P_T_L);
-
-
+void relaciona(l_hash *mesmo_T);
+void ad_rel(hashtag *aux1, hashtag *aux2);
 relacionadas *acha_rel(hashtag *procurada,  relacionadas **ponts,  relacionadas *raiz);
 relacionadas *cria_r(hashtag *nova,relacionadas **P_R);
 relacionadas *insere_lista_r(relacionadas *novo, relacionadas **P_R);
 relacionadas *insere_pre_aux_r(relacionadas *novo, relacionadas *aux,relacionadas **P_R);
+int atualiza_lista_r(relacionadas *novo,hashtag **P_R);
 relacionadas *tira_lista_r(relacionadas *novo, relacionadas **P_R);
 relacionadas *atualiza_arvore_r(relacionadas *filho,relacionadas *pai, relacionadas **P_L);
-
-
+void leparametros(FILE *arquivo, ops *op);
+void escrevearquivo(FILE *arq, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L, ops op, clock_t comeco);
 relacionadas* cadehashtag(char nome[], hashtag *raiz);
+usuario *cria_u();
+hashtag *cria_h ();
+tweet *cria_t ();
+void encerra(usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L);
+void destroi_u(usuario **lixo);
+void destroi_u_pont(usuario **lixo);
+void destroi_t(tweet **lixo);
+void destroi_t_pont(tweet **lixo);
+void destroi_h(hashtag **lixo);
+void destroi_r(relacionadas **lixo);
+void destroi(l_hash **lixo);
