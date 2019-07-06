@@ -11,17 +11,7 @@ typedef hashtag* HASHTAG;
 typedef tweet* TWEET;
 
 
-usuario *cria_user(char *nick, tweet *lido, int flag_menc, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L);
-usuario *verifica_usuario(char *nick,tweet *lido,int param,int outro,usuario *raiz, usuario *procurado,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L);
-usuario *insere_lista_u(usuario *novo,int param,usuario **P_U_AeL);
-usuario *tira_lista(usuario *user,int param, usuario **P_U_AeL);
-usuario *insere_pre_aux(usuario *user, usuario *aux,int param, usuario **P_U_AeL);
-usuario *atualiza_arvore_u(usuario *filho,usuario *pai,int param,usuario **P_U_AeL);
 
-hashtag *cria_hash(char *hash,hashtag **P_H_AeL);
-hashtag *insere_lista_h(hashtag *novo,hashtag **P_H_AeL);
-hashtag *tira_lista_h(hashtag *hash, hashtag **P_H_AeL);
-hashtag *insere_pre_aux_h(hashtag *hash, hashtag *aux,hashtag **P_H_AeL);
 
 int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
 {
@@ -762,7 +752,7 @@ relacionadas *acha_rel(hashtag *procurada,  relacionadas **ponts,  relacionadas 
         else
         {
             relacionadas *temp = raiz->pont[DIR];
-            raiz->pont[DIR]= acha_rel(procurada,*ponts, raiz->pont[DIR], raiz);
+            raiz->pont[DIR]= acha_rel(procurada *ponts, raiz->pont[DIR], raiz);
             if(temp!=raiz->pont[DIR])
                 raiz = atualiza_arvore_r(raiz->pont[DIR], raiz, *ponts);
             return raiz;
@@ -912,7 +902,7 @@ relacionadas *tira_lista_r(relacionadas *novo, relacionadas **P_R)
 
 }
 
-relaciondas *atualiza_arvore_r(relacionadas *filho,relacionadas *pai, relacionadas **P_L)
+relacionadas *atualiza_arvore_r(relacionadas *filho,relacionadas *pai, relacionadas **P_L)
 {
     if(filho->encontros > pai->encontros)
     {
@@ -940,14 +930,14 @@ relaciondas *atualiza_arvore_r(relacionadas *filho,relacionadas *pai, relacionad
 
 void leparametros(FILE *arquivo, ops *op) 	//recebe ponteiro para estrutura com operacoes
 {
-    fscanf(arquivo,"%*2c%d",op->a);
-    fscanf(arquivo,"%*3c%d",op->b);
-    fscanf(arquivo,"%*3c%d",op->c);
-    fscanf(arquivo,"%*3c%d",op->d);
-    fscanf(arquivo,"%*3c%d",op->e);
-    fscanf(arquivo,"%*3c%d",op->f);
+    fscanf(arquivo,"%*2c%d",&op->a);
+    fscanf(arquivo,"%*3c%d",&op->b);
+    fscanf(arquivo,"%*3c%d",&op->c);
+    fscanf(arquivo,"%*3c%d",&op->d);
+    fscanf(arquivo,"%*3c%d",&op->e);
+    fscanf(arquivo,"%*3c%d",&op->f);
     fscanf(arquivo,"%*3c%*[ #]%[;]s",op->hash);
-    fscanf(arquivo,"%*c%d",op->g);
+    fscanf(arquivo,"%*c%d",&op->g);
 
     fclose(arquivo);
 }
