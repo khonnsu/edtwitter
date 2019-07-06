@@ -751,6 +751,7 @@ relacionadas *acha_rel(hashtag *procurada,  relacionadas **ponts,  relacionadas 
         }
         else
         {
+            relacionadas *temp = raiz->pont[DIR];
             raiz->pont[DIR]= acha_rel(procurada *ponts, raiz->pont[DIR], raiz);
             if(temp!=raiz->pont[DIR])
                 raiz = atualiza_arvore_r(raiz->pont[DIR], raiz, *ponts);
