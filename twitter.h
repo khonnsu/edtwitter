@@ -78,4 +78,29 @@ typedef struct{
 
 //Funcoes
 
-int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L);
+usuario *cria_user(char *nick, tweet *lido, int flag_menc, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L);
+usuario *verifica_usuario(char *nick,tweet *lido,int param,int outro,usuario *raiz, usuario *procurado,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L);
+usuario *insere_lista_u(usuario *novo,int param,usuario **P_U_AeL);
+usuario *tira_lista(usuario *user,int param, usuario **P_U_AeL);
+usuario *insere_pre_aux(usuario *user, usuario *aux,int param, usuario **P_U_AeL);
+usuario *atualiza_arvore_u(usuario *filho,usuario *pai,int param,usuario **P_U_AeL);
+
+hashtag *cria_hash(char *hash,hashtag **P_H_AeL);
+hashtag *insere_lista_h(hashtag *novo,hashtag **P_H_AeL);
+hashtag *tira_lista_h(hashtag *hash, hashtag **P_H_AeL);
+hashtag *insere_pre_aux_h(hashtag *hash, hashtag *aux,hashtag **P_H_AeL);
+hashtag *atualiza_arvore_h(hashtag *filho,hashtag *pai, hashtag **P_H_AeL);
+
+tweet *insere_lista_t(tweet *novo, tweet **P_T_L);
+tweet *insere_pre_aux_t(tweet *t, tweet *aux, tweet **P_T_L);
+
+
+relacionadas *acha_rel(hashtag *procurada,  relacionadas **ponts,  relacionadas *raiz);
+relacionadas *cria_r(hashtag *nova,relacionadas **P_R);
+relacionadas *insere_lista_r(relacionadas *novo, relacionadas **P_R);
+relacionadas *insere_pre_aux_r(relacionadas *novo, relacionadas *aux,relacionadas **P_R);
+relacionadas *tira_lista_r(relacionadas *novo, relacionadas **P_R);
+relacionadas *atualiza_arvore_r(relacionadas *filho,relacionadas *pai, relacionadas **P_L);
+
+
+relacionadas* cadehashtag(char nome[], hashtag *raiz);
