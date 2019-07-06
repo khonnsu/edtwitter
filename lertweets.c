@@ -1,6 +1,6 @@
 #include "twitter.c"
 
-int main(int argc, char **argv){
+int main(int argc, char **arg){
 
 	clock_t comeco = clock();
 
@@ -24,21 +24,17 @@ int main(int argc, char **argv){
 
 	leparametros(param,&operacao);
 
-	USUARIO *meus_usuarios = cria_u();
-	HASHTAG *minhas_hashtags = cria_h();
-	TWEET *meus_tweets = cria_t();
+	USUARIO *meus_usuarios = cria_u(*meus_usuarios);
+	HASHTAG *minhas_hashtags = cria_h(*minhas_hashtags);
+	TWEET *meus_tweets = cria_t(*meus_tweets);
 
-	learquivo(entra,*P_U_AeL,*P_H_AeL,*P_T_L);
+	learquivo(entra,*meus_usuarios,*minhas_hashtags,*meus_tweets);
 
-	escrevearquivo(saida,*P_U_AeL, *P_H_AeL, *P_T_l, operacao,comeco);
+	escrevearquivo(saida, *meus_usuarios, *minhas_hashtags, *meus_tweets, operacao,comeco);
 
-	encerra(*P_U_AeL, *P_H_AeL, *P_T_l);
+	encerra(*meus_usuarios, *minhas_hashtags, *meus_tweets);
 
 
 
 	return 0;
 }
-
-
-
-
