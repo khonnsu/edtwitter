@@ -458,8 +458,9 @@ hashtag *verifica_hashtag(char *hash, l_hash *mesmo_T, hashtag *raiz, hashtag **
 
         l_hash *aux;
         aux= mesmo_T;
+
         while(aux->prox!=NULL)
-            aux=aux->prox;
+        aux=aux->prox;
         aux->prox=malloc(sizeof(l_hash));
         aux = aux->prox;
         aux->dado= raiz;
@@ -481,7 +482,7 @@ hashtag *cria_hash(char *hash,hashtag **P_H_AeL)
 
     novo->usos= 1;
 
-    novo = insere_lista_h(novo,*P_H_AeL);
+    novo = insere_lista_h(novo,P_H_AeL);
 
     *novo->associadas = malloc(3*sizeof(relacionadas));
     int i;
