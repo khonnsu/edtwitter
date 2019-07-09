@@ -17,20 +17,18 @@
 #define FIM 1
 #define RAIZ 2
 
-typedef struct USUARIO usuario;
-struct USUARIO{
+typedef struct{
 	char nickname[16]; //por causa do '\0' seu troxa
 	int curtidas;
 	int contador [4];	//[0=post, 1=menc, 2=rts, 3=enga]
 	struct tweet *tweets;
 
 	struct usuario *pont[4*4]; //[0=post, 1=menc, 2=rts, 3=enga][0=prox, 1=dir, 2=esq, 3= ant]
-};
+}usuario;
 
 //Estruturas para hashtags
 
-typedef struct HASHTAG hashtag;
-struct HASHTAG{
+typedef struct{
 	char nome[140];
 	int usos;
 	struct
@@ -41,26 +39,23 @@ struct HASHTAG{
     } *associadas[3]; // [0=ini, 1=fim, 2=raiz];
 
 	struct hashtag *pont[4];	//[0=prox, 1=dir, 2=esq, 3= ant]
-};
+}hashtag;
 
-typedef struct RELACIONADAS relacionadas;
-struct RELACIONADAS{
+typedef struct{
 	struct hashtag *dado;
 	int encontros;
 	struct relacionadas *pont[4];	//[0=prox, 1=dir, 2=esq, 3= ant]
 
-};
+}relacionadas;
 
-typedef struct L_HASH l_hash;
-struct L_HASH{
+typedef struct{
 	struct hashtag *dado;
 	struct l_hash *prox;
-};
+}l_hash;
 
 //Estruturas para tweets
 
-typedef struct TWEET tweet;
-struct TWEET{
+typedef struct{
 	char texto[141];
 	int curtidas;
 	int retweets;
@@ -68,10 +63,9 @@ struct TWEET{
 	struct tweet *prox_user;
 	l_hash *eh_as_hash;
 
-};
+}tweet;
 
-typedef struct OPS ops;
-struct OPS {
+typedef struct{
 	int a;
 	int b;
 	int c;
@@ -80,11 +74,11 @@ struct OPS {
 	int f;
 	int g;
 	char hash[279];
-};
+}ops;
 
-typedef usuario* PUSUARIO;
-typedef hashtag* PHASHTAG;
-typedef tweet* PTWEET;
+typedef usuario* USUARIO;
+typedef hashtag* HASHTAG;
+typedef tweet* TWEET;
 
 //Funcoes
 
@@ -108,8 +102,8 @@ tweet *insere_pre_aux_t(tweet *t, tweet *aux, tweet **P_T_L);
 void relaciona(l_hash *mesmo_T);
 void ad_rel(hashtag *aux1, hashtag *aux2);
 relacionadas *acha_rel(hashtag *procurada,  relacionadas **ponts,  relacionadas *raiz);
-relacionadas *cria_r(relacionadas **P_R);
-relacionadas *add_r(hashtag nova ,relacionadas **P_R)
+relacionadas **cria_r(relacionadas **P_R);
+relacionadas *add_r(hashtag *aux ,relacionadas **P_R);
 relacionadas *insere_lista_r(relacionadas *novo, relacionadas **P_R);
 relacionadas *insere_pre_aux_r(relacionadas *novo, relacionadas *aux,relacionadas **P_R);
 int atualiza_lista_r(relacionadas *novo,hashtag **P_R);

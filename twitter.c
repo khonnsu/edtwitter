@@ -111,7 +111,7 @@ int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
             printf("\nsaiu relaciona\n");
             printf("\nentrou destroi\n");
             destroi(mesmo_T);
-            printf("\saiu destroi\n");
+            printf("\nsaiu destroi\n");
 
             insere_lista_t(atual, P_T_L);
             printf("\nchegou aq\n");
@@ -849,7 +849,7 @@ relacionadas *add_r(hashtag *aux ,relacionadas **P_R)
     nova->dado=aux;
     nova->encontros=1;
     int i;
-    *(nova->pont) =(relacionadas**)malloc(4*sizeof(relacionadas*))
+    *(nova->pont) =(relacionadas**)malloc(4*sizeof(relacionadas*));
     for(i=0;i<4;i++)
         nova->pont[i]=NULL;
 
