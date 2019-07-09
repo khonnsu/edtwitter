@@ -74,17 +74,12 @@ int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
                 fscanf(arq,"%[^;@#]s",atual->texto);
                 fscanf(arq,"%c",&simbolo);
 
-                printf("\nSimbolo = %c\n",simbolo);
-
 
                 switch(simbolo)
                 {
                 case '@':
                     fscanf(arq,"%[^; ]s",n_mencionado);
                     P_U_AeL[MENC*3+RAIZ] = verifica_usuario(n_mencionado,NULL,MENC, 0, P_U_AeL[MENC*3+RAIZ], NULL,P_U_AeL,P_H_AeL,P_T_L);
-
-                    printf("Chegou aq");
-
                     strcat(atual->texto,"@");
                     strcat(atual->texto,auxnick);
                     break;
@@ -114,8 +109,8 @@ int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
 
             relaciona(*mesmo_T);
 
+
             destroi(mesmo_T);
-            printf("\nsaiu destroi\n");
 
             insere_lista_t(atual, P_T_L);
 
@@ -131,7 +126,7 @@ usuario *verifica_usuario(char *nick,tweet *lido,int param,int outro,usuario *ra
     if(raiz!=NULL)
     {
 
-        int i =strcmp(nick,raiz->nickname);
+        int i =stricmp(nick,raiz->nickname);
         if(i==0)
         {
             switch(param)
@@ -177,7 +172,7 @@ usuario *verifica_usuario(char *nick,tweet *lido,int param,int outro,usuario *ra
             usuario *temp = raiz->pont[param*4+ESQ];
             raiz->pont[param*4+ESQ]= verifica_usuario(nick, lido, param, outro, raiz->pont[param*4+ESQ], procurado,P_U_AeL, P_H_AeL, P_T_L);
             if(temp!=raiz->pont[param*4+ESQ])
-                raiz = atualiza_arvore_u(&(raiz->pont[param*4+ESQ]),raiz, param, P_U_AeL);
+                raiz = atualiza_arvore_u(raiz->pont[param*4+ESQ],raiz, param, P_U_AeL);
             return raiz;
         }
         else
@@ -186,7 +181,7 @@ usuario *verifica_usuario(char *nick,tweet *lido,int param,int outro,usuario *ra
 
             raiz->pont[param*4+DIR]= verifica_usuario(nick,lido,param, outro, raiz->pont[param*4+DIR],procurado, P_U_AeL, P_H_AeL, P_T_L);
             if(temp!=raiz->pont[param*4+DIR])
-                raiz = atualiza_arvore_u(&raiz->pont[param*4+DIR],raiz, param, P_U_AeL);
+                raiz = atualiza_arvore_u(raiz->pont[param*4+DIR],raiz, param, P_U_AeL);
             return raiz;
         }
     }
@@ -284,7 +279,7 @@ usuario *insere_lista_u(usuario *novo,int param,usuario **P_U_AeL)
 
         while(aux!=NULL) // acha ordem alfabetica dentro entre os itens com o mesmo numero de acessos (aux sera anterior a novo)
         {
-            if(strcmp(novo->nickname,aux->nickname)>= 0 && aux->contador[param] == novo->contador[param])
+            if(stricmp(novo->nickname,aux->nickname)>= 0 && aux->contador[param] == novo->contador[param])
                 break;
             aux=aux->pont[param*4+ANT];
         }
@@ -323,7 +318,7 @@ int atualiza_lista_u(usuario *user,int param,usuario **P_U_AeL)
 
             while(aux!=NULL)
             {
-                if(strcmp(user->nickname,aux->nickname)>= 0 && aux->contador[param] == user->contador[param])
+                if(stricmp(user->nickname,aux->nickname)>= 0 && aux->contador[param] == user->contador[param])
                     break;
                 aux= aux->pont[param*4+ANT];
             }
@@ -437,7 +432,7 @@ hashtag *verifica_hashtag(char *hash, l_hash **mesmo_T, hashtag *raiz, hashtag *
 {
     if(raiz!=NULL)
     {
-        int i =strcmp(hash,raiz->nome);
+        int i =stricmp(hash,raiz->nome);
         if(i==0)
         {
             raiz->usos++; // incrementa contador de usos da hashtag
@@ -567,7 +562,7 @@ hashtag *insere_lista_h(hashtag *novo,hashtag **P_H_AeL)
 
         while(aux!=NULL) // acha ordem alfabetica dentro entre os itens com o mesmo numero de acessos (aux sera anterior a novo)
         {
-            if(strcmp(novo->nome,aux->nome)>= 0 && aux->usos == novo->usos)
+            if(stricmp(novo->nome,aux->nome)>= 0 && aux->usos == novo->usos)
                 break;
             aux=aux->pont[ANT];
         }
@@ -604,7 +599,7 @@ int atualiza_lista_h(hashtag *hash,hashtag **P_H_AeL)
 
             while(aux!=NULL)
             {
-                if(strcmp(hash->nome,aux->nome)>= 0 && aux->usos == hash->usos)
+                if(stricmp(hash->nome,aux->nome)>= 0 && aux->usos == hash->usos)
                     break;
                 aux= aux->pont[ANT];
             }
@@ -722,7 +717,7 @@ tweet *insere_lista_t(tweet *novo, tweet **P_T_L)
         }
         while(aux!=NULL) // acha ordem alfabetica dentro entre os itens com o mesmo numero de acessos (aux sera anterior a novo)
         {
-            if(strcmp(novo->texto,aux->texto)>= 0 && aux->retweets == novo->retweets)
+            if(stricmp(novo->texto,aux->texto)>= 0 && aux->retweets == novo->retweets)
                 break;
             aux=aux->pont[ANT];
         }
@@ -797,7 +792,6 @@ void relaciona(l_hash *mesmo_T)
 
 void ad_rel(hashtag *aux1, hashtag *aux2)
 {
-
         aux1->associadas[RAIZ] = acha_rel(aux2, aux1->associadas, aux1->associadas[RAIZ]);
         aux2->associadas[RAIZ] = acha_rel(aux1, aux2->associadas, aux2->associadas[RAIZ]);
 }
@@ -810,15 +804,11 @@ relacionadas *acha_rel(hashtag *procurada,  relacionadas **ponts,  relacionadas 
     {
         hashtag *aux;
         aux= raiz->dado;
-        int i = strcmp(procurada->nome,aux->nome);
+        int i = stricmp(procurada->nome,aux->nome);
         if(i==0)
         {
             raiz->encontros++; // incrementa contador de usos da hashtag
-
-
-            atualiza_lista_r(raiz, procurada);		//atualiza lista
-
-
+            ponts[INI]=atualiza_lista_r(ponts, raiz);		//atualiza lista
             return raiz;
         }
 
@@ -899,7 +889,7 @@ relacionadas *insere_lista_r(relacionadas *novo, relacionadas **P_R)
             aux2 = novo->dado;
             aux3 = aux->dado;
 
-            if(strcmp(aux2->nome,aux3->nome)>= 0 && aux->encontros == novo->encontros)
+            if(stricmp(aux2->nome,aux3->nome)>= 0 && aux->encontros == novo->encontros)
                 break;
             aux=aux->pont[ANT];
         }
@@ -953,7 +943,7 @@ relacionadas *insere_pre_aux_r(relacionadas *novo, relacionadas *aux,relacionada
 }
 
 
-int atualiza_lista_r(relacionadas *novo,hashtag **P_R)
+relacionadas *atualiza_lista_r(relacionadas **P_R,relacionadas *novo)
 {
     if(novo!=P_R[INI])
     {
@@ -974,18 +964,16 @@ int atualiza_lista_r(relacionadas *novo,hashtag **P_R)
             {
                 aux2= novo->dado;
                 aux3= aux->dado;
-                if(strcmp(aux2->nome, aux3->nome)>= 0 && aux->encontros == novo->encontros)
+                if(stricmp(aux2->nome, aux3->nome)>= 0 && aux->encontros == novo->encontros)
                     break;
                 aux= aux->pont[ANT];
             }
 
-            novo= tira_lista_r(novo, *P_R);
-            novo= insere_pre_aux_r(novo, aux, *P_R);
-
-            return 1;
+            novo= tira_lista_r(novo, P_R);
+            novo= insere_pre_aux_r(novo, aux, P_R);
         }
     }
-    return 0;
+    return P_R[INI];
 }
 
 
@@ -1126,7 +1114,7 @@ void escreveop_b(FILE *arq,usuario **P_U_AeL, ops op)
             cont++;
         }
     }
-
+}
 
 void escreveop_c(FILE *arq,tweet **P_T_L, ops op)
 {
@@ -1283,7 +1271,7 @@ relacionadas* cadehashtag(char nome[], hashtag *raiz)
 
     hashtag *aux_hash = raiz;
     int i;
-    i=strcmp(nome,aux_hash->nome);
+    i=stricmp(nome,aux_hash->nome);
     if(i==0)
         return aux_hash->associadas;
     else if(i<0)
@@ -1331,9 +1319,13 @@ tweet **cria_t ()
 
 void encerra(usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
 {
+    printf("\nvai destruir user\n");
     destroi_u(P_U_AeL);
+    printf("\ndestruiu user/vai destruir hashtag\n");
     destroi_h(P_H_AeL);
+    printf("\ndestruiu hashtag/vai destruir tweet\n");
     destroi_t(P_T_L);
+    printf("\ndestruiu tweet\n");
 }
 
 void destroi_u(usuario **lixo)
@@ -1343,8 +1335,9 @@ void destroi_u(usuario **lixo)
     {
         aux= lixo[POST*3+INI];
         lixo[POST*3+INI] = lixo[POST*3+INI]->pont[PROX];
+        printf("\nVai destruir u pont");
         destroi_u_pont(aux->pont);
-        free(aux);
+        free(aux);;
     }
 }
 
@@ -1352,7 +1345,7 @@ void destroi_u_pont(usuario **lixo)
 {
     usuario *aux;
     int i;
-    for(i=0; i<16; i++,*lixo = lixo[1])
+    for(i=0; i<16; i++)
     {
         aux= *lixo;
         free(aux);
@@ -1364,10 +1357,12 @@ void destroi_t(tweet **lixo)
     tweet *aux;
     while(lixo[INI]!=NULL)
     {
+        printf("\nchegou aq1\n");
         aux= lixo[INI];
         lixo[INI] = lixo[INI]->pont[PROX];
         destroi_t_pont(aux->pont);
         free(aux);
+        printf("\nchegou aq2\n");
     }
 }
 

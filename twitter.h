@@ -109,10 +109,10 @@ tweet *insere_pre_aux_t(tweet *t, tweet *aux, tweet **P_T_L);
 void relaciona(l_hash *mesmo_T);
 void ad_rel(hashtag *aux1, hashtag *aux2);
 relacionadas *acha_rel(hashtag *procurada,  relacionadas **ponts,  relacionadas *raiz);
-relacionadas *cria_r(hashtag *nova,relacionadas **P_R);
+relacionadas **cria_r(relacionadas **P_R);
 relacionadas *insere_lista_r(relacionadas *novo, relacionadas **P_R);
 relacionadas *insere_pre_aux_r(relacionadas *novo, relacionadas *aux,relacionadas **P_R);
-int atualiza_lista_r(relacionadas *novo,hashtag **P_R);
+relacionadas *atualiza_lista_r(relacionadas **P_R,relacionadas *nova);
 relacionadas *tira_lista_r(relacionadas *novo, relacionadas **P_R);
 relacionadas *atualiza_arvore_r(relacionadas *filho,relacionadas *pai, relacionadas **P_L);
 void leparametros(FILE *arquivo, ops *op);
@@ -136,4 +136,4 @@ void escreveop_d(FILE *arq,usuario **P_U_AeL, ops op);
 void escreveop_e(FILE *arq,usuario **P_U_AeL, ops op);
 void escreveop_f(FILE *arq,usuario **P_U_AeL, ops op);
 void escreveop_g(FILE *arq,hashtag **P_H_AeL, ops op);
-
+relacionadas *add_r(hashtag *aux ,relacionadas **P_R);
