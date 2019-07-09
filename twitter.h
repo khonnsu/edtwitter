@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -128,3 +129,11 @@ void destroi_t_pont(tweet **lixo);
 void destroi_h(hashtag **lixo);
 void destroi_r(relacionadas **lixo);
 void destroi(l_hash **lixo);
+void escreveop_a(FILE *arq,hashtag **P_H_AeL, ops op);
+void escreveop_b(FILE *arq,usuario **P_U_AeL, ops op);
+void escreveop_c(FILE *arq,tweet **P_T_L, ops op);
+void escreveop_d(FILE *arq,usuario **P_U_AeL, ops op);
+void escreveop_e(FILE *arq,usuario **P_U_AeL, ops op);
+void escreveop_f(FILE *arq,usuario **P_U_AeL, ops op);
+void escreveop_g(FILE *arq,hashtag **P_H_AeL, ops op);
+
