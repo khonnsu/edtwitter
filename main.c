@@ -32,9 +32,15 @@ int main(int argc, char **arg){
 	meus_tweets = cria_t(meus_tweets);
 	learquivo(entra,meus_usuarios,minhas_hashtags,meus_tweets);
 
+	printf("\nleu, vai escrever se pa\n");
+
 	escrevearquivo(saida, meus_usuarios, minhas_hashtags, meus_tweets, operacao,comeco);
 
+	printf("\nescreveu\n");
+
 	encerra(meus_usuarios, minhas_hashtags, meus_tweets);
+
+	printf("\nencerrou\n");
 
 
 
