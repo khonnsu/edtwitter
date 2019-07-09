@@ -63,7 +63,6 @@ int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
         }
         while(simbolo != '@' && !feof(arq));
 
-
         if(!feof(arq))
         {
             fscanf(arq,"%[^;]s",nick);
@@ -75,11 +74,17 @@ int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
                 fscanf(arq,"%[^;@#]s",atual->texto);
                 fscanf(arq,"%c",&simbolo);
 
+                printf("\nSimbolo = %c\n",simbolo);
+
+
                 switch(simbolo)
                 {
                 case '@':
                     fscanf(arq,"%[^; ]s",n_mencionado);
                     P_U_AeL[MENC*3+RAIZ] = verifica_usuario(n_mencionado,NULL,MENC, 0, P_U_AeL[MENC*3+RAIZ], NULL,P_U_AeL,P_H_AeL,P_T_L);
+
+                    printf("Chegou aq");
+
                     strcat(atual->texto,"@");
                     strcat(atual->texto,auxnick);
                     break;
@@ -106,15 +111,14 @@ int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
             fscanf(arq,"%d",&atual->curtidas);
 
             P_U_AeL[POST*3+RAIZ]= verifica_usuario(nick, atual, POST, 0, P_U_AeL[POST*3+RAIZ], NULL, P_U_AeL, P_H_AeL, P_T_L);
-            printf("\nentrou relaciona\n");
+
             relaciona(*mesmo_T);
-            printf("\nsaiu relaciona\n");
-            printf("\nentrou destroi\n");
+
             destroi(mesmo_T);
             printf("\nsaiu destroi\n");
 
             insere_lista_t(atual, P_T_L);
-            printf("\nchegou aq\n");
+
         }
     }
     return 0;
@@ -153,7 +157,9 @@ usuario *verifica_usuario(char *nick,tweet *lido,int param,int outro,usuario *ra
                 break;
 
             case MENC:
-                raiz->contador[MENC]++; // incrementa contador de numero de MENÇÕES
+
+                raiz->contador[MENC]++; // incrementa contador de numero de MENÃÃES
+
                 raiz->contador[ENGA]= raiz->curtidas + raiz->contador[MENC] + raiz->contador[RTS];	// atualiza o engajamento
 
                 atualiza_lista_u(raiz, ENGA,P_U_AeL);		//atualiza lista
@@ -212,10 +218,12 @@ usuario *verifica_usuario(char *nick,tweet *lido,int param,int outro,usuario *ra
 usuario *cria_user(char *nick, tweet *lido, int flag_menc, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
 {
     usuario *novo;
-    novo= malloc(sizeof(usuario));
+
+    novo= (usuario*)malloc(sizeof(usuario));
     strcpy(novo->nickname,nick);
 
-    *(novo->pont) = malloc(16*sizeof(usuario*));
+    *(novo->pont) =(usuario**) malloc(16*sizeof(usuario*));
+
 
     int i, j;
 
@@ -260,7 +268,9 @@ usuario *cria_user(char *nick, tweet *lido, int flag_menc, usuario **P_U_AeL, ha
 
 usuario *insere_lista_u(usuario *novo,int param,usuario **P_U_AeL)
 {
+
     if(P_U_AeL[param*3+FIM]!=NULL) // caso a lista não seja vazia
+
     {
         usuario *aux;
         aux=P_U_AeL[param*3+FIM];
@@ -438,15 +448,19 @@ hashtag *verifica_hashtag(char *hash, l_hash **mesmo_T, hashtag *raiz, hashtag *
             {
                 l_hash *aux;
                 aux= (l_hash*)malloc(sizeof(l_hash));
+
                 aux->dado=raiz;
+
                 aux->prox= *mesmo_T;
                 *mesmo_T= aux;
             }
             else
             {
                 *mesmo_T= (l_hash*) malloc(sizeof(l_hash));
+
                 (*mesmo_T)->dado = raiz;
                 (*mesmo_T)->prox = NULL;
+
             }
 
 
@@ -472,7 +486,9 @@ hashtag *verifica_hashtag(char *hash, l_hash **mesmo_T, hashtag *raiz, hashtag *
             return raiz;
         }
     }
+
     else // não encontrou na arvore e achou ponto para incerção
+
     {
         raiz= cria_hash(hash, P_H_AeL);
 
@@ -480,15 +496,19 @@ hashtag *verifica_hashtag(char *hash, l_hash **mesmo_T, hashtag *raiz, hashtag *
             {
                 l_hash *aux;
                 aux= (l_hash*)malloc(sizeof(l_hash));
+
                 aux->dado=raiz;
+
                 aux->prox= *mesmo_T;
                 *mesmo_T= aux;
             }
             else
             {
                 *mesmo_T= (l_hash*) malloc(sizeof(l_hash));
+
                 (*mesmo_T)->dado = raiz;
                 (*mesmo_T)->prox = NULL;
+
             }
 
 
@@ -514,7 +534,9 @@ hashtag *cria_hash(char *hash,hashtag **P_H_AeL)
     novo = insere_lista_h(novo,P_H_AeL);
 
 
-    *(novo->associadas) = malloc(3*sizeof(relacionadas*));
+
+    (*novo->associadas) =(relacionadas**) malloc(3*sizeof(relacionadas));
+
     for(i=0; i<3; i++)
         novo->associadas[i]=NULL;
 
@@ -529,7 +551,9 @@ hashtag *cria_hash(char *hash,hashtag **P_H_AeL)
 
 hashtag *insere_lista_h(hashtag *novo,hashtag **P_H_AeL)
 {
+
     if(P_H_AeL[FIM]!=NULL) // caso a lista não seja vazia
+
     {
         hashtag *aux;
         aux=P_H_AeL[FIM];
@@ -684,7 +708,9 @@ hashtag *atualiza_arvore_h(hashtag *filho,hashtag *pai, hashtag **P_H_AeL)
 
 tweet *insere_lista_t(tweet *novo, tweet **P_T_L)
 {
+
     if(P_T_L[FIM]!=NULL) // caso a lista não seja vazia
+
     {
         tweet *aux;
         aux=P_T_L[FIM];
@@ -758,12 +784,9 @@ void relaciona(l_hash *mesmo_T)
         while(cursor!=NULL)
         {
             aux2=cursor->dado;
-            printf("\nvai ad rel %s e %s\n", aux1->nome, aux2->nome);
+
             ad_rel(aux1, aux2);
-            printf("\nsaiu adrel\n");
-            printf("\nvai ad rel %s e %s\n", aux2->nome, aux1->nome);
-            ad_rel(aux2, aux1);
-            printf("\nsaiu adrel\n");
+
             cursor=cursor->prox;
         }
         mesmo_T= mesmo_T->prox;
@@ -774,16 +797,12 @@ void relaciona(l_hash *mesmo_T)
 
 void ad_rel(hashtag *aux1, hashtag *aux2)
 {
-    if(aux1->associadas[RAIZ]==NULL)
-    {
 
-        aux1->associadas[RAIZ] = cria_r(aux1->associadas);
-        printf("\nSaiu cria_r\n");
-    }
-
-    aux1->associadas[RAIZ] = acha_rel(aux2, aux1->associadas, aux1->associadas[RAIZ]);
-
+        aux1->associadas[RAIZ] = acha_rel(aux2, aux1->associadas, aux1->associadas[RAIZ]);
+        aux2->associadas[RAIZ] = acha_rel(aux1, aux2->associadas, aux2->associadas[RAIZ]);
 }
+
+
 
 relacionadas *acha_rel(hashtag *procurada,  relacionadas **ponts,  relacionadas *raiz)
 {
@@ -796,7 +815,9 @@ relacionadas *acha_rel(hashtag *procurada,  relacionadas **ponts,  relacionadas 
         {
             raiz->encontros++; // incrementa contador de usos da hashtag
 
-            atualiza_lista_r(raiz, &procurada);		//atualiza lista
+
+            atualiza_lista_r(raiz, procurada);		//atualiza lista
+
 
             return raiz;
         }
@@ -820,10 +841,9 @@ relacionadas *acha_rel(hashtag *procurada,  relacionadas **ponts,  relacionadas 
             return raiz;
         }
     }
-    else // não encontrou na arvore e achou ponto para incerção
+    else // nÃ£o encontrou na arvore e achou ponto para incerÃ§Ã£o
     {
         raiz = add_r(procurada, ponts);
-
         return raiz;
 
     }
@@ -856,7 +876,6 @@ relacionadas *add_r(hashtag *aux ,relacionadas **P_R)
     insere_lista_r(nova,P_R);
 
     return nova;
-
 }
 
 
@@ -885,7 +904,7 @@ relacionadas *insere_lista_r(relacionadas *novo, relacionadas **P_R)
             aux=aux->pont[ANT];
         }
 
-        novo= insere_pre_aux_r(novo, aux, *P_R);
+        novo= insere_pre_aux_r(novo, aux, P_R);
 
     }
     else
@@ -1041,6 +1060,7 @@ void escrevearquivo(FILE *arq, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T
     clock_t fim;
     float tempo;
 
+
     escreveop_a(arq,P_H_AeL,op);
     escreveop_b(arq,P_U_AeL,op);
     escreveop_c(arq,P_T_L,op);
@@ -1058,6 +1078,7 @@ void escrevearquivo(FILE *arq, usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T
 void escreveop_a(FILE *arq,hashtag **P_H_AeL, ops op)
 {
 int cont;
+
     fprintf(arq,"--- OP A\n");
     cont=0;
     hashtag *aux_hash = P_H_AeL[INI];
@@ -1078,6 +1099,7 @@ int cont;
             cont++;
         }
     }
+
 }
 
 void escreveop_b(FILE *arq,usuario **P_U_AeL, ops op)
@@ -1085,6 +1107,7 @@ void escreveop_b(FILE *arq,usuario **P_U_AeL, ops op)
 
     fprintf(arq,"--- OP B\n");
     int cont=0;
+
     usuario *aux_user = P_U_AeL[POST*3+INI];
     if(op.b == 0)
     {
@@ -1103,12 +1126,13 @@ void escreveop_b(FILE *arq,usuario **P_U_AeL, ops op)
             cont++;
         }
     }
-}
+
 
 void escreveop_c(FILE *arq,tweet **P_T_L, ops op)
 {
     fprintf(arq,"--- OP C\n");
     int cont = 0;
+
     tweet *aux_tweet = P_T_L[INI];
     if(op.c == 0)
     {
@@ -1127,6 +1151,7 @@ void escreveop_c(FILE *arq,tweet **P_T_L, ops op)
             cont++;
         }
     }
+
 }
 
 void escreveop_d(FILE *arq,usuario **P_U_AeL, ops op)
@@ -1134,6 +1159,7 @@ void escreveop_d(FILE *arq,usuario **P_U_AeL, ops op)
     fprintf(arq,"--- OP D\n");
     int cont = 0;
     usuario *aux_user = P_U_AeL[MENC*3+INI];
+
     if(op.d == 0)
     {
         while(aux_user!=NULL)
@@ -1152,6 +1178,7 @@ void escreveop_d(FILE *arq,usuario **P_U_AeL, ops op)
         }
     }
 
+
 }
 
 void escreveop_e(FILE *arq,usuario **P_U_AeL, ops op)
@@ -1159,6 +1186,7 @@ void escreveop_e(FILE *arq,usuario **P_U_AeL, ops op)
     fprintf(arq,"--- OP E\n");
     int cont = 0;
     usuario* aux_user = P_U_AeL[RTS*3+INI];
+
     if(op.e == 0)
     {
         while(aux_user!=NULL)
@@ -1177,6 +1205,7 @@ void escreveop_e(FILE *arq,usuario **P_U_AeL, ops op)
         }
     }
 
+
 }
 
 void escreveop_f(FILE *arq,usuario **P_U_AeL, ops op)
@@ -1184,6 +1213,7 @@ void escreveop_f(FILE *arq,usuario **P_U_AeL, ops op)
     fprintf(arq,"--- OP F\n");
     int cont=0;
     usuario* aux_user = P_U_AeL[MENC*3+INI];
+
     if(op.f == 0)
     {
         while(aux_user!=NULL)
@@ -1202,12 +1232,14 @@ void escreveop_f(FILE *arq,usuario **P_U_AeL, ops op)
         }
     }
 
+
 }
 
 void escreveop_g(FILE *arq,hashtag **P_H_AeL, ops op)
 {
     fprintf(arq,"--- OP G\n");
     int cont=0;
+
     relacionadas *aux_rel = cadehashtag(op.hash, P_H_AeL[RAIZ]);
     if(aux_rel==NULL)
     {
@@ -1218,7 +1250,9 @@ void escreveop_g(FILE *arq,hashtag **P_H_AeL, ops op)
         hashtag *aux;
         if(op.g == 0)
         {
+
             while(aux_rel!=NULL)
+
             {
                 aux = aux_rel->dado;
                 fprintf(arq,"#%s, %d\n", aux->nome, aux_rel->encontros);
@@ -1227,7 +1261,9 @@ void escreveop_g(FILE *arq,hashtag **P_H_AeL, ops op)
         }
         else
         {
+
             while(cont<op.g&&aux_rel!=NULL)
+
             {
                 aux = aux_rel->dado;
                 fprintf(arq,"#%s, %d\n", aux->nome, aux_rel->encontros);
@@ -1237,7 +1273,9 @@ void escreveop_g(FILE *arq,hashtag **P_H_AeL, ops op)
         }
     }
 
+
 }
+
 relacionadas* cadehashtag(char nome[], hashtag *raiz)
 {
     if(raiz==NULL)
@@ -1380,5 +1418,3 @@ void destroi(l_hash **lixo)
         free(aux);
     }
 }
-
-
