@@ -32,7 +32,7 @@ struct USUARIO{
 
 typedef struct HASHTAG hashtag;
 struct HASHTAG{
-	char nome[140];
+	char nome[279];
 	int usos;
 	struct
 	{
@@ -62,7 +62,7 @@ struct L_HASH{
 
 typedef struct TWEET tweet;
 struct TWEET{
-	char texto[141];
+	char texto[281];
 	int curtidas;
 	int retweets;
 	struct tweet *pont[4]; //[0=prox,3=ant]
