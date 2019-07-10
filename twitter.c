@@ -47,10 +47,11 @@ int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
 
     char nick[16];
     char auxnick[16];
+    char auxtext[281];
     char simbolo;
     int fimtexto;
     char n_mencionado[16];
-    char hashtag[140];
+    char hashtag[279];
 
     while(!feof(arq))
     {
@@ -71,20 +72,21 @@ int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
             *mesmo_T=NULL;
             do
             {
-                fscanf(arq,"%[^;@#]s",atual->texto);
+                fscanf(arq,"%[^;@#]s",auxtext);
+
                 fscanf(arq,"%c",&simbolo);
 
 
                 switch(simbolo)
                 {
                 case '@':
-                    fscanf(arq,"%[^; ]s",n_mencionado);
+                    fscanf(arq,"%[^;.,!?(){}\" ]s",n_mencionado);
                     P_U_AeL[MENC*3+RAIZ] = verifica_usuario(n_mencionado,NULL,MENC, 0, P_U_AeL[MENC*3+RAIZ], NULL,P_U_AeL,P_H_AeL,P_T_L);
                     strcat(atual->texto,"@");
                     strcat(atual->texto,auxnick);
                     break;
                 case '#':
-                    fscanf(arq,"%[^; ]s",hashtag);
+                    fscanf(arq,"%[^;.,!?(){}\" ]s",hashtag);
                     P_H_AeL[RAIZ] = verifica_hashtag(hashtag,mesmo_T,P_H_AeL[RAIZ],P_H_AeL);
                     strcat(atual->texto,"#");
                     strcat(atual->texto,hashtag);
@@ -110,7 +112,7 @@ int learquivo(FILE *arq,usuario **P_U_AeL, hashtag **P_H_AeL, tweet **P_T_L)
             relaciona(*mesmo_T);
 
 
-            destroi(mesmo_T);
+            //destroi(mesmo_T);
 
             insere_lista_t(atual, P_T_L);
 
@@ -367,7 +369,8 @@ usuario *insere_pre_aux(usuario *user, usuario *aux,int param, usuario **P_U_AeL
     if(aux==NULL)
     {
         user->pont[param*4+PROX]=P_U_AeL[param*3+INI];
-        P_U_AeL[param*3+INI]->pont[param*4+ANT]= user;
+        if(P_U_AeL[param*3+INI]!= NULL)
+            P_U_AeL[param*3+INI]->pont[param*4+ANT]= user;
         P_U_AeL[param*3+INI]= user;
     }
     else
